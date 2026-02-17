@@ -1,6 +1,6 @@
 {
-    "Group": "HytaleModding",
-    "Name": "ExamplePlugin",
+    "Group": "com.voxtech",
+    "Name": "InteractionTek",
     "Version": "0.0.0",
     "Description": "Description of your plugin",
     "Authors": [
@@ -16,5 +16,5 @@
     "Dependencies": {},
     "OptionalDependencies": {},
     "ServerVersion": "*",
-    "Main": "dev.hytalemodding.ExamplePlugin"
+    "Main": "com.voxtech.InteractionTekPlugin"
 }
