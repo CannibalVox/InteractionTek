@@ -3,6 +3,7 @@ package com.voxtech.matchers;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
@@ -21,18 +22,15 @@ public class QuantityMatcher extends ItemCondition.ItemMatcher {
                     (object, value) -> object.value = value,
                     object -> object.value)
             .documentation("The quantity to compare the target item stack's quantity against.")
+            .addValidator(Validators.greaterThanOrEqual(1))
             .add()
             .build();
 
     private boolean lessThan;
-    private int value;
+    private int value = 1;
 
     @Override
     public boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        if (targetItem == null) {
-            return false;
-        }
-
         int quantity = targetItem.getQuantity();
         if (lessThan && quantity <= value) {
             return true;

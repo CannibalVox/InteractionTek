@@ -86,14 +86,28 @@ public class ItemCondition extends SimpleItemInteraction {
                         (object, invert) -> object.invert = invert,
                         object -> object.invert,
                         (object, parent) -> object.invert = parent.invert)
-                .documentation("Inverts the resutls of the matcher")
+                .documentation("Inverts the results of the matcher")
+                .add()
+                .append(new KeyedCodec<>("AllowEmpty", Codec.BOOLEAN),
+                        (object, allowEmpty) -> object.allowEmpty = allowEmpty,
+                        object -> object.allowEmpty)
+                .documentation("If true, the matcher will succeed when the target slot is empty.")
                 .add()
                 .build();
 
         protected boolean invert;
+        protected boolean allowEmpty;
 
         public final boolean test(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
+            if (targetItem == null && failEmptyItem()) {
+                return allowEmpty;
+            }
+
             return this.test0(user, itemInHand, targetContainer, targetSlot, targetItem) ^ this.invert;
+        }
+
+        public boolean failEmptyItem() {
+            return true;
         }
 
         public abstract boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem);

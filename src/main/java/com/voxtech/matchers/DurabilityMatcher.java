@@ -3,6 +3,7 @@ package com.voxtech.matchers;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
@@ -15,7 +16,7 @@ public class DurabilityMatcher extends ItemCondition.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<DurabilityMatcher> CODEC = BuilderCodec.builder(DurabilityMatcher.class, DurabilityMatcher::new, BASE_CODEC)
-        .documentation("Used to match items that have a durability above or below a given threshold. Always fails empty slots.")
+        .documentation("Used to match items that have a durability above or below a given threshold. Empty slots will fail.")
         .append(new KeyedCodec<>("LessThan", Codec.BOOLEAN),
             (object, lessThan) -> object.lessThan = lessThan,
             object -> object.lessThan)
@@ -25,6 +26,7 @@ public class DurabilityMatcher extends ItemCondition.ItemMatcher {
             (object, value) -> object.value = value,
             object -> object.value)
             .documentation("The durability amount to compare the target item's durability against.")
+            .addValidator(Validators.greaterThanOrEqual(0.0))
             .add()
         .append(new KeyedCodec<>("IgnoreNoDurability", Codec.BOOLEAN),
             (object, ignore) -> object.ignoreNoDurability = ignore,
@@ -39,10 +41,6 @@ public class DurabilityMatcher extends ItemCondition.ItemMatcher {
 
     @Override
     public boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        if (targetItem == null) {
-            return false;
-        }
-
         if (this.ignoreNoDurability && targetItem.getMaxDurability() == 0) {
             return true;
         }
