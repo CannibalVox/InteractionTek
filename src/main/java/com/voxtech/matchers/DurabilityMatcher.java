@@ -4,6 +4,7 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.validation.Validators;
+import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
@@ -40,7 +41,7 @@ public class DurabilityMatcher extends ItemCondition.ItemMatcher {
     private double value;
 
     @Override
-    public boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
+    public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
         if (this.ignoreNoDurability && targetItem.getMaxDurability() == 0) {
             return true;
         }

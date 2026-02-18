@@ -62,7 +62,7 @@ public class ItemCondition extends SimpleItemInteraction {
         }
 
         for (ItemMatcher matcher : this.itemMatchers) {
-            boolean success = matcher.test(ref, itemInHand, targetContainer, targetSlot, targetItemStack);
+            boolean success = matcher.test(ref, context.getCommandBuffer(), itemInHand, targetContainer, targetSlot, targetItemStack);
             if (success && this.itemMatchType == ItemMatchType.Any) {
                 return;
             }
@@ -98,18 +98,18 @@ public class ItemCondition extends SimpleItemInteraction {
         protected boolean invert;
         protected boolean allowEmpty;
 
-        public final boolean test(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
+        public final boolean test(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
             if (targetItem == null && failEmptyItem()) {
                 return allowEmpty;
             }
 
-            return this.test0(user, itemInHand, targetContainer, targetSlot, targetItem) ^ this.invert;
+            return this.test0(user, commandBuffer, itemInHand, targetContainer, targetSlot, targetItem) ^ this.invert;
         }
 
         public boolean failEmptyItem() {
             return true;
         }
 
-        public abstract boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
+        public abstract boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
     }
 }

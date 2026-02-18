@@ -5,6 +5,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
+import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -34,7 +35,7 @@ public class ItemTypeMatcher extends ItemCondition.ItemMatcher {
     private String[] itemTypes;
 
     @Override
-    public boolean test0(Ref<EntityStore> user, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
+    public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
         if (itemTypes.length == 0) {
             return false;
         }
