@@ -8,6 +8,7 @@ import com.voxtech.matchers.*;
 import com.voxtech.matchers.slot.ActiveHotbarMatcher;
 import com.voxtech.matchers.slot.ActiveUtilityMatcher;
 import com.voxtech.matchers.slot.IndexedSlotMatcher;
+import com.voxtech.matchers.slot.InteractionHeldItemMatcher;
 
 import javax.annotation.Nonnull;
 
@@ -44,6 +45,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         SlotMatcher.Slot.CODEC.register("IndexedSlot", IndexedSlotMatcher.class, IndexedSlotMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("ActiveHotbar", ActiveHotbarMatcher.class, ActiveUtilityMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("ActiveUtility", ActiveUtilityMatcher.class, ActiveUtilityMatcher.CODEC);
+        SlotMatcher.Slot.CODEC.register("InteractionHeldItem", InteractionHeldItemMatcher.class, InteractionHeldItemMatcher.CODEC);
     }
 
     @Override
@@ -51,6 +53,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         SlotMatcher.Slot.CODEC.remove(IndexedSlotMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveHotbarMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveUtilityMatcher.class);
+        SlotMatcher.Slot.CODEC.remove(InteractionHeldItemMatcher.class);
 
         ItemCondition.ItemMatcher.CODEC.remove(DurabilityMatcher.class);
         ItemCondition.ItemMatcher.CODEC.remove(EmptySlotMatcher.class);

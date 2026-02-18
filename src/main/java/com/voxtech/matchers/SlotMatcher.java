@@ -7,6 +7,7 @@ import com.hypixel.hytale.codec.lookup.CodecMapCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -31,9 +32,9 @@ public class SlotMatcher extends ItemCondition.ItemMatcher {
     private Slot[] slots;
 
     @Override
-    public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
+    public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
         for (Slot slot : slots) {
-            if (slot.test(user, commandBuffer, itemInHand, targetContainer, targetSlot, targetItem)) {
+            if (slot.test(user, commandBuffer, context, targetContainer, targetSlot, targetItem)) {
                 return true;
             }
         }
@@ -49,6 +50,6 @@ public class SlotMatcher extends ItemCondition.ItemMatcher {
     public abstract static class Slot {
         public static final CodecMapCodec<SlotMatcher.Slot> CODEC = new CodecMapCodec<>("Type");
 
-        public abstract boolean test(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, ItemStack itemInHand, ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
+        public abstract boolean test(Ref<EntityStore> user,  CommandBuffer<EntityStore> commandBuffer, InteractionContext context,ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
     }
 }
