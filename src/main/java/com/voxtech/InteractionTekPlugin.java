@@ -4,6 +4,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.TargetFirstItem;
 import com.voxtech.matchers.*;
 import com.voxtech.matchers.slot.ActiveHotbarMatcher;
 import com.voxtech.matchers.slot.ActiveUtilityMatcher;
@@ -21,6 +22,7 @@ public class InteractionTekPlugin extends JavaPlugin {
     @Override
     protected void setup() {
         Interaction.CODEC.register("TekItemCondition", ItemCondition.class, ItemCondition.CODEC);
+        Interaction.CODEC.register("TekTargetFirstItem", TargetFirstItem.class, TargetFirstItem.CODEC);
 
         ItemCondition.ItemMatcher.CODEC.register("Durability", DurabilityMatcher.class, DurabilityMatcher.CODEC);
         ItemCondition.ItemMatcher.CODEC.register("EmptySlot", EmptySlotMatcher.class, EmptySlotMatcher.CODEC);
@@ -76,5 +78,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemCondition.ItemMatcher.CODEC.remove(SlotMatcher.class);
 
         Interaction.CODEC.remove(ItemCondition.class);
+        Interaction.CODEC.remove(TargetFirstItem.class);
     }
 }

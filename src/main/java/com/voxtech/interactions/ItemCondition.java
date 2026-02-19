@@ -31,7 +31,7 @@ public class ItemCondition extends SimpleItemInteraction {
     .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
         (interaction, matchType) -> interaction.itemMatchType = matchType,
         interaction -> interaction.itemMatchType)
-        .documentation("Whether all, any, or no matchers need to match for this interaction to succeed")
+        .documentation("Whether all or any matchers need to match for this interaction to succeed")
         .add()
     .append(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
         (object, matchers) -> object.itemMatchers = matchers,
@@ -40,7 +40,7 @@ public class ItemCondition extends SimpleItemInteraction {
         .add()
     .build();
 
-    private ItemMatchType itemMatchType;
+    private ItemMatchType itemMatchType = ItemMatchType.All;
     private ItemMatcher[] itemMatchers;
 
     @Override

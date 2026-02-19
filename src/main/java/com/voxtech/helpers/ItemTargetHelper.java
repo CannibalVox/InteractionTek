@@ -3,6 +3,7 @@ package com.voxtech.helpers;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.meta.DynamicMetaStore;
 import com.hypixel.hytale.server.core.meta.MetaKey;
 
@@ -12,32 +13,34 @@ import static com.hypixel.hytale.server.core.modules.interaction.interaction.con
 
 public class ItemTargetHelper {
     @Nonnull
-    public static final MetaKey<ItemContext> TARGET_ITEM = CONTEXT_META_REGISTRY.registerMetaObject(InteractionContext::createHeldItemContext);
+    public static final MetaKey<TargetItemData> TARGET_ITEM = CONTEXT_META_REGISTRY.registerMetaObject((context) ->
+         new TargetItemData(context.getHeldItemContainer(), context.getHeldItemSlot(), context.getHeldItem())
+    );
 
-    public static ItemContext getTargetItem(InteractionContext context) {
+    public static TargetItemData getTargetItem(InteractionContext context) {
         // Other interactions might change the currently held item without updating us, so always refer to the held item
         // when possible
         DynamicMetaStore<InteractionContext> metaStore = context.getMetaStore();
         if (!metaStore.hasMetaObject(TARGET_ITEM)) {
-            return context.createHeldItemContext();
+            return targetDataFromHeldItem(context);
         }
 
-        ItemContext itemContext = metaStore.getMetaObject(TARGET_ITEM);
+        TargetItemData itemData = metaStore.getMetaObject(TARGET_ITEM);
 
-        if (itemContext == null) {
-            return context.createHeldItemContext();
+        if (itemData == null) {
+            return targetDataFromHeldItem(context);
         }
 
-        if (itemContext.getContainer() == context.getHeldItemContainer() && itemContext.getSlot() == context.getHeldItemSlot()) {
+        if (itemData.getContainer() == context.getHeldItemContainer() && itemData.getSlot() == context.getHeldItemSlot()) {
             // We have a target but it's just pointing at the held item, so let's not have one anymore
-            itemContext = context.createHeldItemContext();
+            itemData = targetDataFromHeldItem(context);
             metaStore.putMetaObject(TARGET_ITEM, null);
         }
 
-        return itemContext;
+        return itemData;
     }
 
-    public static void putTargetItem(InteractionContext context, ItemContext newItemContext) {
+    public static void putTargetItem(InteractionContext context, TargetItemData newItemContext) {
         DynamicMetaStore<InteractionContext> metaStore = context.getMetaStore();
 
         if (newItemContext.getContainer() == context.getHeldItemContainer() && newItemContext.getSlot() == context.getHeldItemSlot()) {
@@ -62,7 +65,7 @@ public class ItemTargetHelper {
             return;
         }
 
-        ItemContext targetItem = metaStore.getMetaObject(TARGET_ITEM);
+        TargetItemData targetItem = metaStore.getMetaObject(TARGET_ITEM);
         if (targetItem == null) {
             context.setHeldItem(replacement);
             return;
@@ -75,6 +78,27 @@ public class ItemTargetHelper {
             return;
         }
 
-        metaStore.putMetaObject(TARGET_ITEM, new ItemContext(targetItem.getContainer(), targetItem.getSlot(), replacement));
+        metaStore.putMetaObject(TARGET_ITEM, new TargetItemData(targetItem.getContainer(), targetItem.getSlot(), replacement));
+    }
+
+    public static TargetItemData targetDataFromHeldItem(InteractionContext context) {
+        return new TargetItemData(context.getHeldItemContainer(), context.getHeldItemSlot(), context.getHeldItem());
+    }
+
+    public static class TargetItemData {
+        private final ItemContainer targetContainer;
+        private final short targetSlot;
+        private ItemStack targetItem;
+
+        public TargetItemData( ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+            this.targetContainer = targetContainer;
+            this.targetSlot = targetSlot;
+            this.targetItem = targetItem;
+        }
+
+        public ItemContainer getContainer() { return targetContainer; }
+        public short getSlot() { return targetSlot; }
+        public ItemStack getItemStack() { return targetItem; }
+        public void setItem(ItemStack item) { this.targetItem = item; }
     }
 }

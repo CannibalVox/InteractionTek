@@ -1,7 +1,5 @@
 package com.voxtech.interactions;
 
-import com.hypixel.hytale.codec.KeyedCodec;
-import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionType;
@@ -9,7 +7,6 @@ import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.LivingEntity;
 import com.hypixel.hytale.server.core.inventory.Inventory;
-import com.hypixel.hytale.server.core.inventory.ItemContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
@@ -25,7 +22,7 @@ public abstract class SimpleItemInteraction extends SimpleInteraction {
     @Override
     protected void tick0(boolean firstRun, float time, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nonnull CooldownHandler cooldownHandler) {
         if (firstRun) {
-            ItemContext targetItem = ItemTargetHelper.getTargetItem(context);
+            ItemTargetHelper.TargetItemData targetItem = ItemTargetHelper.getTargetItem(context);
             Ref<EntityStore> ref = context.getEntity();
             CommandBuffer<EntityStore> buffer = context.getCommandBuffer();
             ItemStack itemInHand = null;
@@ -47,7 +44,7 @@ public abstract class SimpleItemInteraction extends SimpleInteraction {
     @Override
     protected void simulateTick0(boolean firstRun, float time, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nonnull CooldownHandler cooldownHandler) {
         if (firstRun) {
-            ItemContext targetItem = ItemTargetHelper.getTargetItem(context);
+            ItemTargetHelper.TargetItemData targetItem = ItemTargetHelper.getTargetItem(context);
             Ref<EntityStore> ref = context.getEntity();
             CommandBuffer<EntityStore> buffer = context.getCommandBuffer();
             ItemStack itemInHand = null;
