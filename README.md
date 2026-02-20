@@ -1,55 +1,119 @@
-# Hytale Plugin Template
+# InteractionTek
 
-A ready-to-use starting point for creating Hytale server plugins with Java, _or Kotlin_. If you've
-been using the Asset Editor and want to start writing server-side logic — custom commands, event
-handling, gameplay systems — this is the simplest place to begin.
+An interactions mod for modders who love interactions.
 
-## How to start?
+This mod adds a small-but-growing number of new interactions and extensible data 
+  types to Hytale. Each based around a theme or new feature.
 
-1. Copy the template by downloading it or using the "Use this template" button.
-2. [Configure or Install the Java SDK](https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env)
-   to use the latest 25 from JetBrains or similar.
-3. Open the project in your favorite IDE, we
-   recommend [IntelliJ IDEA](https://www.jetbrains.com/idea/download).
-4. Optionally, run `./gradlew` if your IDE does not automtically synchronizes.
-5. Run the devserver with the Run Configuration created, or `./gradlew devServer`.
+## Item Target
 
-> On Windows, use `.\gradlew.bat` instead of `./gradlew`, this script is here to run the
-> Gradle without you needing to install the tooling itself, only the Java is required.
+Interaction chains have the concept of a "held item" - this isn't necessarily a 
+  held item. In `Equipped` interaction, the "held item" is the item that was just
+  equipped, for instance. However, the held item isn't intended to be changed
+  and in many cases has a very specific meaning (for most Hypixel interactions
+  that mess with items, there is an assumption that the held item will actually be
+  the item in the User entity's active hotbar slot).
 
-With that you will be prompted in the output to authorize your server, and then you can start
-developing your plugin while the server is live reloading the code changes.
+InteractionTek adds the concept of an "item target", to go with the block and
+  entity target. At the beginning of a new
+  interaction chain, the item target is always the held item. The target can
+  be changed, though, and all of InteractionTek's interactions that mess with
+  items will target the item target.
 
-From here,
-the [HytaleModding guides](https://hytalemodding.dev/en/docs/guides/plugin/build-and-test) cover
-more details!
 
-## Scaffoldit Plugin
+### TekItemCondition
 
-While there are multiple plugins made for Hytale, the template currently uses a zero-boilerplate one
-where you only need the absolute minimum to start. However, you do have access to everything as
-normal if you know what you are doing.
+This interaction allow you to specify a list of item matchers to compare against
+  the current item target. The interaction will fail if the matchers fail. 
+  InteractionTek has a large number of matcher types, with full in-asset-editor
+  documentation.  You can also create your own!
 
-For in-depth configuration, you can visit the [ScaffoldIt Plugin Docs](https://scaffoldit.dev).
+**TekItemCondition Fields**
 
-## Troubleshooting
+| Field Name | Type | Required? | Notes |
+|------------|------|-----------|-------|
+| Matchers | `Array`<br />(Element Type: `ItemMatcher`) | **Yes** | A list of matchers that will examine the target item. |
+| ItemMatchType | `ItemMatchType`<br />(Default: All) | **No** | Whether all of the matchers need to pass for this interaction to pass, or any. |
 
-- **Gradle sync fails in IntelliJ** –
-  _Check that Java 25 is installed and configured under File → Project Structure → SDKs._
-- **Build fails with missing dependencies** –
-  _Run `./gradlew build --refresh-dependencies`. Make sure you have internet access!_
-- **Permission denied on `./gradlew`** –
-  _Run `chmod +x gradlew` (macOS/Linux)._
-- **Hot-reload doesn't work** –
-  _Verify you're using JetBrains Runtime, not a regular JDK._
+**ItemMatchType Values**
+- `All`
+- `Any`
 
-## Resources
+**Available ItemMatcher Types**
 
-- [Hytale Modding Guides](https://hytalemodding.dev)
-- [Hytale Modding Discord](https://discord.gg/hytalemodding)
-- [ScaffoldIt Plugin Docs](https://scaffoldit.dev)
+For more information, examine the types in the asset editor.
 
-## License
+- `Armor` - Matches armor pieces
+- `AssetTag` - Matches items with at least one provided asset tag
+- `Category` - Matches items with at least one provided category
+- `DropOnDeath` - Matches items that drop on death
+- `Durability` - Matches items whose durability is more than or less than a value
+- `EmptySlot` - Matches empty slots
+- `Glider` - Matches gliders
+- `Group` - Allows matchers to be grouped with a different ItemMatchType for complex logical operations
+- `Interaction` - Matches items with at least one interaction of the provided types
+- `Inventory` - Matches items that belong to one of the specified inventory sections
+- `ItemState` - Matches items that belong to one of the specified item states
+- `ItemType` - Matches items that belong to one of hte specified item types
+- `PortalKey` - Matches portal keys. May optionally require a specified type
+- `Quantity` - Matches items whose quantity is more or less than a value
+- `Resource` - Matches items with at least one of the provided resources
+- `Slot` - Compares the target item's slot against a `Slot` matcher
+- `Tool` - Matches tools. May optionally require a provided spec
+- `Usable` - Matches usable items
+- `Weapon` - Matches weapons
 
-Add your own after copying the template, though we recommend using MIT, BSD, or Apache to keep
-the modding community open!
+**Available Slot Types**
+
+You can make your own of these, too!
+
+- `ActiveHotbar` - Matches the currently-active hotbar slot
+- `ActiveUtility` - Matches the currently-active utility slot
+- `IndexedSlot` - Matches slots with the provided slot index
+- `InteractionHeldItem` - Matches the interaction chain's current held item
+
+
+### TekTargetFirstItem
+
+This interaction will scan the User entity's inventory slots and compare each slot
+  against a set of ItemMatchers.  The first slot to succeed will be made the item
+  target for the rest of the interaction chain.
+
+**TekTargetFirstItem Fields**
+
+| Field Name | Type | Required? | Notes                                                                       |
+|------------|------|-----------|-----------------------------------------------------------------------------|
+| Matchers | `Array`<br />(Element Type: `ItemMatcher`) | **Yes** | A list of matchers that will examine the target item.                       |
+| ItemMatchType | `ItemMatchType`<br />(Default: All) | **No** | Whether all of the matchers need to pass for a slot to be targeted, or any. |
+| InventorySections | `Array`<br />(Element Type: `Integer`) | **No** | A list of inventory section ids. If provided, this field defines which sections will be scanned and in which order. By default, all sections are scanned, with the hotbar and utility slots first. |
+
+
+### TekModifyItem
+
+This interaction applies a series of modifications to the current item target. 
+  The interaction will fail if any modifications fail.  Once again, there are
+  several modification types and you can create your own.
+
+**TekModifyItem Fields**
+
+| Field Name | Type | Required? | Notes                                                                       |
+|------------|------|-----------|-----------------------------------------------------------------------------|
+| ItemModifications | `Array`<br />(Element Type: `ItemModification`) | **Yes** | A list of modifications that will be applied to the target item one at a time. |
+| ContinueOnFailure | `Boolean`<br />(Default: false) | **No** | If true, this interaction will not stop executing modifications when one fails. It will attempt all modifications once before failing. |
+| RequiredGameMode | `GameMode` | **No** | If the User entity is a player and this field is provided, the player will need to be in the specified game mode for the modificatoins to execute. Otherwise, the interaction will do nothing and be marked successful. |
+
+**GameMode Values**
+
+- `Adventure`
+- `Creative`
+
+**Available ItemModification Types**
+
+For more information, examine the types in the asset editor.
+
+- `AdjustDurability` - Make changes to the target item's durability, handle item breakage.
+- `AdjustQuantity` - Make changes to the target item's quantity
+- `ChangeState` - Transition the target item between item states
+- `Conditional` - Execute a set of modifications only if a set of ItemMatchers succeed
+- `Singulate` - If the target item has a quantity greater than 1, execute a modification on only one of them and place the rest back in the User entity's inventory
+
