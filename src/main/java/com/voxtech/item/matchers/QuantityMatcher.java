@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -10,9 +10,9 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
-public class QuantityMatcher extends ItemCondition.ItemMatcher {
+public class QuantityMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<QuantityMatcher> CODEC = BuilderCodec.builder(QuantityMatcher.class, QuantityMatcher::new, BASE_CODEC)
             .documentation("Used to match item stacks that have a quantity above or below a given threshold. Always fails empty slots.")
             .append(new KeyedCodec<>("LessThan", Codec.BOOLEAN),

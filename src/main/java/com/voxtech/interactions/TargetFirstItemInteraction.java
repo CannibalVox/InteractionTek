@@ -15,7 +15,6 @@ import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.LivingEntity;
 import com.hypixel.hytale.server.core.inventory.Inventory;
-import com.hypixel.hytale.server.core.inventory.ItemContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
@@ -23,20 +22,19 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.protocol.ItemMatchType;
-import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static com.hypixel.hytale.server.core.inventory.Inventory.*;
 
-public class TargetFirstItem extends SimpleItemInteraction {
+public class TargetFirstItemInteraction extends SimpleItemInteraction {
 
     @Nonnull
-    public static final BuilderCodec<TargetFirstItem> CODEC = BuilderCodec
-        .builder(TargetFirstItem.class, TargetFirstItem::new, SimpleItemInteraction.CODEC)
+    public static final BuilderCodec<TargetFirstItemInteraction> CODEC = BuilderCodec
+        .builder(TargetFirstItemInteraction.class, TargetFirstItemInteraction::new, SimpleItemInteraction.CODEC)
         .documentation("Scans the User entity's inventory until it finds an item slot that satisfies the provided matchers. If none is found, this interaction will fail.")
-        .append(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemCondition.ItemMatcher.CODEC, ItemCondition.ItemMatcher[]::new)),
+        .append(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
             object -> object.itemMatchers)
             .documentation("The item matchers to compare against each slot")
@@ -54,17 +52,17 @@ public class TargetFirstItem extends SimpleItemInteraction {
             .add()
         .build();
 
-    private ItemCondition.ItemMatcher[] itemMatchers;
+    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
     private ItemMatchType itemMatchType = ItemMatchType.All;
     private Integer[] inventorySections = {HOTBAR_SECTION_ID, UTILITY_SECTION_ID, TOOLS_SECTION_ID, ARMOR_SECTION_ID, STORAGE_SECTION_ID, BACKPACK_SECTION_ID};
 
     @Override
-    protected void interactWithItem(@NonNullDecl World world, @NonNullDecl CommandBuffer<EntityStore> buffer, @NonNullDecl InteractionType type, @NonNullDecl InteractionContext context, @NullableDecl ItemStack itemInHand, @NullableDecl ItemContainer targetContainer, int targetSlot, @NullableDecl ItemStack targetItemStack, @NonNullDecl CooldownHandler cooldownHandler) {
+    protected void interactWithItem(@Nonnull World world, @Nonnull CommandBuffer<EntityStore> buffer, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack, @Nonnull CooldownHandler cooldownHandler) {
         scanInventory(buffer, context);
     }
 
     @Override
-    protected void simulateInteractWithItem(@NonNullDecl World world, @NonNullDecl InteractionType type, @NonNullDecl InteractionContext context, @NullableDecl ItemStack itemInHand, @NullableDecl ItemContainer targetContainer, int targetSlot, @NullableDecl ItemStack targetItemStack) {
+    protected void simulateInteractWithItem(@Nonnull World world, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack) {
         scanInventory(context.getCommandBuffer(), context);
     }
 
@@ -130,7 +128,7 @@ public class TargetFirstItem extends SimpleItemInteraction {
     }
 
     private boolean runMatchers(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer container, short slot, ItemStack contents) {
-        for (ItemCondition.ItemMatcher matcher : itemMatchers) {
+        for (ItemConditionInteraction.ItemMatcher matcher : itemMatchers) {
             boolean result = matcher.test(ref, buffer, context, container, slot, contents);
             if (!result && itemMatchType == ItemMatchType.All) {
                 return false;

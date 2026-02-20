@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -7,19 +7,18 @@ import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.ResourceType;
 import com.hypixel.hytale.protocol.ItemResourceType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResourceMatcher extends ItemCondition.ItemMatcher {
+public class ResourceMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<ResourceMatcher> CODEC = BuilderCodec
@@ -31,6 +30,10 @@ public class ResourceMatcher extends ItemCondition.ItemMatcher {
             .documentation("If provided, the matcher will only succeed if one of the item's resource types matches one of the provided resource conditions")
             .add()
         .afterDecode(object -> {
+            if (object.resourceConditions == null) {
+                object.resourceConditionMap = new HashMap<>();
+                return;
+            }
             object.resourceConditionMap = new HashMap<>(object.resourceConditions.length);
             for (ResourceCondition condition : object.resourceConditions) {
                 object.resourceConditionMap.put(condition.resourceId, condition);

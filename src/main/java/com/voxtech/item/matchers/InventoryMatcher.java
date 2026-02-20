@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -15,13 +15,11 @@ import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
 import javax.annotation.Nonnull;
 
-import static com.hypixel.hytale.server.core.inventory.Inventory.HOTBAR_SECTION_ID;
-
-public class InventoryMatcher extends ItemCondition.ItemMatcher {
+public class InventoryMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<InventoryMatcher> CODEC = BuilderCodec

@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -11,12 +11,12 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-public class InteractionMatcher extends ItemCondition.ItemMatcher {
+public class InteractionMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<InteractionMatcher> CODEC = BuilderCodec

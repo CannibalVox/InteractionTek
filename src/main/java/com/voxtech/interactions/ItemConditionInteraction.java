@@ -22,10 +22,10 @@ import com.voxtech.protocol.ItemMatchType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ItemCondition extends SimpleItemInteraction {
+public class ItemConditionInteraction extends SimpleItemInteraction {
     @Nonnull
-    public static final BuilderCodec<ItemCondition> CODEC = BuilderCodec.builder(
-        ItemCondition.class, ItemCondition::new, SimpleInteraction.CODEC
+    public static final BuilderCodec<ItemConditionInteraction> CODEC = BuilderCodec.builder(
+        ItemConditionInteraction.class, ItemConditionInteraction::new, SimpleInteraction.CODEC
     )
     .documentation("This interaction will fail if the target item does not match the ItemMatchers")
     .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
@@ -88,9 +88,10 @@ public class ItemCondition extends SimpleItemInteraction {
                         (object, parent) -> object.invert = parent.invert)
                 .documentation("Inverts the results of the matcher")
                 .add()
-                .append(new KeyedCodec<>("AllowEmpty", Codec.BOOLEAN),
+                .appendInherited(new KeyedCodec<>("AllowEmpty", Codec.BOOLEAN),
                         (object, allowEmpty) -> object.allowEmpty = allowEmpty,
-                        object -> object.allowEmpty)
+                        object -> object.allowEmpty,
+                        (object, parent) -> object.allowEmpty = parent.allowEmpty)
                 .documentation("If true, the matcher will succeed when the target slot is empty.")
                 .add()
                 .build();

@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -7,20 +7,20 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
-import javax.annotation.Nonnull;
-
-public class UsableMatcher extends ItemCondition.ItemMatcher {
-
-    @Nonnull
-    public static final BuilderCodec<UsableMatcher> CODEC = BuilderCodec
-        .builder(UsableMatcher.class, UsableMatcher::new, BASE_CODEC)
-        .documentation("This matcher succeeds if the target item is usable.")
-        .build();
+public class EmptySlotMatcher extends ItemConditionInteraction.ItemMatcher {
+    public static final BuilderCodec<EmptySlotMatcher> CODEC = BuilderCodec.builder(EmptySlotMatcher.class, EmptySlotMatcher::new, BASE_CODEC)
+            .documentation("This matcher only succeeds if a null item is passed to it.")
+            .build();
 
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        return targetItem.getItem().getUtility().isUsable();
+        return targetItem == null;
+    }
+
+    @Override
+    public boolean failEmptyItem() {
+        return false;
     }
 }

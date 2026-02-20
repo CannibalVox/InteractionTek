@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.assetstore.AssetExtraInfo;
 import com.hypixel.hytale.assetstore.AssetRegistry;
@@ -13,12 +13,12 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
-public class AssetTagMatcher extends ItemCondition.ItemMatcher {
+public class AssetTagMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<AssetTagMatcher> CODEC = BuilderCodec
@@ -31,6 +31,11 @@ public class AssetTagMatcher extends ItemCondition.ItemMatcher {
             .addValidator(Validators.nonNull())
             .add()
             .afterDecode(object -> {
+                if (object.assetTags == null) {
+                    object.assetTagIndices = new ArrayList<>();
+                    return;
+                }
+
                 object.assetTagIndices = new ArrayList<>(object.assetTags.length);
                 for(String tag : object.assetTags) {
                     object.assetTagIndices.add(AssetRegistry.getOrCreateTagIndex(tag));

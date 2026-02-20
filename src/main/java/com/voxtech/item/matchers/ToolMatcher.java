@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -13,16 +13,15 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 
 import javax.annotation.Nonnull;
-import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ToolMatcher extends ItemCondition.ItemMatcher {
+public class ToolMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<ToolMatcher> CODEC = BuilderCodec
@@ -35,6 +34,11 @@ public class ToolMatcher extends ItemCondition.ItemMatcher {
                 .add()
             .afterDecode(object -> {
                 object.toolConditionsMap = new HashMap<>();
+
+                if (object.toolConditions == null) {
+                    return;
+                }
+
                 for (ToolCondition condition : object.toolConditions) {
                     if (!object.toolConditionsMap.containsKey(condition.gatherType)) {
                         object.toolConditionsMap.put(condition.gatherType, new ArrayList<>());

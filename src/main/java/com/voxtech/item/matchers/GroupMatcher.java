@@ -1,4 +1,4 @@
-package com.voxtech.matchers;
+package com.voxtech.item.matchers;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -10,12 +10,12 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemCondition;
+import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.protocol.ItemMatchType;
 
 import javax.annotation.Nonnull;
 
-public class GroupMatcher extends ItemCondition.ItemMatcher {
+public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
     @Nonnull
     public static final BuilderCodec<GroupMatcher> CODEC = BuilderCodec.builder(
             GroupMatcher.class, GroupMatcher::new, BASE_CODEC
@@ -26,7 +26,7 @@ public class GroupMatcher extends ItemCondition.ItemMatcher {
             interaction -> interaction.itemMatchType)
         .documentation("Whether all, any, or no matchers need to match for this interaction to succeed")
         .add()
-        .append(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemCondition.ItemMatcher.CODEC, ItemCondition.ItemMatcher[]::new)),
+        .append(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
             (object, matchers) -> object.itemMatchers = matchers,
             object -> object.itemMatchers)
         .documentation("These matchers test the target item to decide if the interaction fails")
@@ -34,11 +34,11 @@ public class GroupMatcher extends ItemCondition.ItemMatcher {
         .build();
 
     private ItemMatchType itemMatchType;
-    private ItemCondition.ItemMatcher[] itemMatchers;
+    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
 
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        for (ItemCondition.ItemMatcher matcher : itemMatchers) {
+        for (ItemConditionInteraction.ItemMatcher matcher : itemMatchers) {
             boolean result = matcher.test(user, commandBuffer, context, targetContainer, targetSlot, targetItem);
 
             if (result && itemMatchType == ItemMatchType.Any) {

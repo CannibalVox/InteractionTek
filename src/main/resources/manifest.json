@@ -1,20 +1,18 @@
 {
     "Group": "com.voxtech",
     "Name": "InteractionTek",
-    "Version": "0.0.0",
-    "Description": "Description of your plugin",
+    "Version": "1.0.0",
+    "Description": "An interactions mod for modders who love interactions",
     "Authors": [
         {
-            "Name": "Your Name",
-            "Email": "your.email@example.com",
-            "Url": "https://your-website.com"
+            "Name": "Voxtek",
+            "Url": "https://github.com/CannibalVox/InteractionTek"
         }
     ],
-    "Website": "https://your-plugin-website.com",
     "DisabledByDefault": false,
     "IncludesAssetPack": false,
     "Dependencies": {},
     "OptionalDependencies": {},
-    "ServerVersion": "*",
+    "ServerVersion": "2026.02.19-1a311a592",
     "Main": "com.voxtech.InteractionTekPlugin"
 }
