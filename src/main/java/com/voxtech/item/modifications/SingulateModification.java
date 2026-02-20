@@ -1,4 +1,4 @@
-package com.voxtech.item.matchers.modifications;
+package com.voxtech.item.modifications;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;

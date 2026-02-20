@@ -7,11 +7,11 @@ import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.interactions.TargetFirstItemInteraction;
 import com.voxtech.item.matchers.*;
-import com.voxtech.item.matchers.modifications.*;
 import com.voxtech.item.matchers.slot.ActiveHotbarMatcher;
 import com.voxtech.item.matchers.slot.ActiveUtilityMatcher;
 import com.voxtech.item.matchers.slot.IndexedSlotMatcher;
 import com.voxtech.item.matchers.slot.InteractionHeldItemMatcher;
+import com.voxtech.item.modifications.*;
 
 import javax.annotation.Nonnull;
 
