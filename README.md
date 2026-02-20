@@ -8,7 +8,7 @@ This mod adds a small-but-growing number of new interactions and extensible data
 ## Item Target
 
 Interaction chains have the concept of a "held item" - this isn't necessarily a 
-  held item. In `Equipped` interaction, the "held item" is the item that was just
+  held item. In `Equipped` interactions, the "held item" is the item that was just
   equipped, for instance. However, the held item isn't intended to be changed
   and in many cases has a very specific meaning (for most Hypixel interactions
   that mess with items, there is an assumption that the held item will actually be
@@ -54,7 +54,7 @@ For more information, examine the types in the asset editor.
 - `Interaction` - Matches items with at least one interaction of the provided types
 - `Inventory` - Matches items that belong to one of the specified inventory sections
 - `ItemState` - Matches items that belong to one of the specified item states
-- `ItemType` - Matches items that belong to one of hte specified item types
+- `ItemType` - Matches items that belong to one of the specified item types
 - `PortalKey` - Matches portal keys. May optionally require a specified type
 - `Quantity` - Matches items whose quantity is more or less than a value
 - `Resource` - Matches items with at least one of the provided resources
@@ -77,14 +77,15 @@ You can make your own of these, too!
 
 This interaction will scan the User entity's inventory slots and compare each slot
   against a set of ItemMatchers.  The first slot to succeed will be made the item
-  target for the rest of the interaction chain.
+  target for the rest of the interaction chain. If no slots succeed, this interaction
+  will fail.
 
 **TekTargetFirstItem Fields**
 
-| Field Name | Type | Required? | Notes                                                                       |
-|------------|------|-----------|-----------------------------------------------------------------------------|
-| Matchers | `Array`<br />(Element Type: `ItemMatcher`) | **Yes** | A list of matchers that will examine the target item.                       |
-| ItemMatchType | `ItemMatchType`<br />(Default: All) | **No** | Whether all of the matchers need to pass for a slot to be targeted, or any. |
+| Field Name | Type | Required? | Notes                                                                                                                                                                                              |
+|------------|------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Matchers | `Array`<br />(Element Type: `ItemMatcher`) | **Yes** | A list of matchers that will examine each item.                                                                                                                                                    |
+| ItemMatchType | `ItemMatchType`<br />(Default: All) | **No** | Whether all of the matchers need to pass for a slot to be targeted, or any.                                                                                                                        |
 | InventorySections | `Array`<br />(Element Type: `Integer`) | **No** | A list of inventory section ids. If provided, this field defines which sections will be scanned and in which order. By default, all sections are scanned, with the hotbar and utility slots first. |
 
 
