@@ -7,10 +7,7 @@ import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.interactions.TargetFirstItemInteraction;
 import com.voxtech.item.matchers.*;
-import com.voxtech.item.matchers.slot.ActiveHotbarMatcher;
-import com.voxtech.item.matchers.slot.ActiveUtilityMatcher;
-import com.voxtech.item.matchers.slot.IndexedSlotMatcher;
-import com.voxtech.item.matchers.slot.InteractionHeldItemMatcher;
+import com.voxtech.item.matchers.slot.*;
 import com.voxtech.item.modifications.*;
 
 import javax.annotation.Nonnull;
@@ -51,12 +48,16 @@ public class InteractionTekPlugin extends JavaPlugin {
         SlotMatcher.Slot.CODEC.register("ActiveHotbar", ActiveHotbarMatcher.class, ActiveUtilityMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("ActiveUtility", ActiveUtilityMatcher.class, ActiveUtilityMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("InteractionHeldItem", InteractionHeldItemMatcher.class, InteractionHeldItemMatcher.CODEC);
+        SlotMatcher.Slot.CODEC.register("TargetArmorSlot", TargetArmorSlotMatcher.class, TargetArmorSlotMatcher.CODEC);
+        SlotMatcher.Slot.CODEC.register("AnyOtherSlot", AnyOtherSlotMatcher.class, AnyOtherSlotMatcher.CODEC);
+        SlotMatcher.Slot.CODEC.register("TargetSlot", TargetSlotMatcher.class, TargetSlotMatcher.CODEC);
 
         ModifyItemInteraction.ItemModification.CODEC.register("AdjustQuantity", AdjustQuantityModification.class, AdjustQuantityModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("Singulate", SingulateModification.class, SingulateModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("AdjustDurability", AdjustDurabilityModification.class, AdjustDurabilityModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("Conditional", ConditionalModification.class, ConditionalModification.CODEC);
-        ModifyItemInteraction.ItemModification.CODEC.register("ChangeState", ChangeStateModification.class, ChangeStateModification.CODEC);
+        ModifyItemInteraction.ItemModification.CODEC.register("ChangeItem", ChangeItemModification.class, ChangeItemModification.CODEC);
+        ModifyItemInteraction.ItemModification.CODEC.register("RelocateItem", RelocateItemModification.class, RelocateItemModification.CODEC);
     }
 
     @Override
@@ -65,12 +66,16 @@ public class InteractionTekPlugin extends JavaPlugin {
         ModifyItemInteraction.ItemModification.CODEC.remove(SingulateModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(AdjustDurabilityModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(ConditionalModification.class);
-        ModifyItemInteraction.ItemModification.CODEC.remove(ChangeStateModification.class);
+        ModifyItemInteraction.ItemModification.CODEC.remove(ChangeItemModification.class);
+        ModifyItemInteraction.ItemModification.CODEC.remove(RelocateItemModification.class);
 
         SlotMatcher.Slot.CODEC.remove(IndexedSlotMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveHotbarMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveUtilityMatcher.class);
         SlotMatcher.Slot.CODEC.remove(InteractionHeldItemMatcher.class);
+        SlotMatcher.Slot.CODEC.remove(TargetArmorSlotMatcher.class);
+        SlotMatcher.Slot.CODEC.remove(AnyOtherSlotMatcher.class);
+        SlotMatcher.Slot.CODEC.remove(TargetSlotMatcher.class);
 
         ItemConditionInteraction.ItemMatcher.CODEC.remove(DurabilityMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(EmptySlotMatcher.class);

@@ -71,6 +71,9 @@ You can make your own of these, too!
 - `ActiveUtility` - Matches the currently-active utility slot
 - `IndexedSlot` - Matches slots with the provided slot index
 - `InteractionHeldItem` - Matches the interaction chain's current held item
+- `TargetArmorSlot` - If the target item is an armor piece, matches the armor's equipped slot
+- `TargetSlot` - Will match the interaction chain's current target slot.
+- `AnyOtherSlot` - Will match every slot except the interaction chain's current target item's slot
 
 
 ### TekTargetFirstItem
@@ -114,7 +117,7 @@ For more information, examine the types in the asset editor.
 
 - `AdjustDurability` - Make changes to the target item's durability, handle item breakage.
 - `AdjustQuantity` - Make changes to the target item's quantity
-- `ChangeState` - Transition the target item between item states
+- `ChangeItem` - Transition the target item to different item types and/or item states. Existing item states can be matched with wildcards
 - `Conditional` - Execute a set of modifications only if a set of ItemMatchers succeed
+- `RelocateItemModification` - Move target item to an available slot and change the item target to its new location. Can be used for equipping and unequipping items and so much more.
 - `Singulate` - If the target item has a quantity greater than 1, execute a modification on only one of them and place the rest back in the User entity's inventory
-
