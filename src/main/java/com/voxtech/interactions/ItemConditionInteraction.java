@@ -6,6 +6,7 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.lookup.CodecMapCodec;
+import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionState;
@@ -38,6 +39,7 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
         object -> object.itemMatchers,
         (object, parent) -> object.itemMatchers = parent.itemMatchers)
         .documentation("These matchers test the target item to decide if the interaction fails")
+        .addValidator(Validators.nonNull())
         .add()
     .build();
 
@@ -57,7 +59,7 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
     private void matchItem(@Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack) {
         Ref<EntityStore> ref = context.getEntity();
 
-        if (this.itemMatchers.length == 0) {
+        if (this.itemMatchers == null || this.itemMatchers.length == 0) {
             context.getState().state = InteractionState.Failed;
             return;
         }
