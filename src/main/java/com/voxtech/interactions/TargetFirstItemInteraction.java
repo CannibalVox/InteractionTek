@@ -48,13 +48,13 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
         .append(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
             (object, inventorySections) -> object.inventorySections = inventorySections,
             object -> object.inventorySections)
-            .documentation("If provided, decides which sections to scan and what order to scan them in. A sensible default that scans all slots will be used otherwise.")
+            .documentation("If provided, decides which sections to scan and what order to scan them in. A sensible default that scans all adventure mode slots will be used otherwise.")
             .add()
         .build();
 
     private ItemConditionInteraction.ItemMatcher[] itemMatchers;
     private ItemMatchType itemMatchType = ItemMatchType.All;
-    private Integer[] inventorySections = {HOTBAR_SECTION_ID, UTILITY_SECTION_ID, TOOLS_SECTION_ID, ARMOR_SECTION_ID, STORAGE_SECTION_ID, BACKPACK_SECTION_ID};
+    private Integer[] inventorySections = {HOTBAR_SECTION_ID, STORAGE_SECTION_ID, UTILITY_SECTION_ID, ARMOR_SECTION_ID, BACKPACK_SECTION_ID};
 
     @Override
     protected void interactWithItem(@Nonnull World world, @Nonnull CommandBuffer<EntityStore> buffer, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack, @Nonnull CooldownHandler cooldownHandler) {

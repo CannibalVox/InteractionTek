@@ -51,7 +51,6 @@ For more information, examine the types in the asset editor.
 - `EmptySlot` - Matches empty slots
 - `Glider` - Matches gliders
 - `Group` - Allows matchers to be grouped with a different ItemMatchType for complex logical operations
-- `Interaction` - Matches items with at least one interaction of the provided types
 - `Inventory` - Matches items that belong to one of the specified inventory sections
 - `ItemState` - Matches items that belong to one of the specified item states
 - `ItemType` - Matches items that belong to one of the specified item types
@@ -60,7 +59,6 @@ For more information, examine the types in the asset editor.
 - `Resource` - Matches items with at least one of the provided resources
 - `Slot` - Compares the target item's slot against a `Slot` matcher
 - `Tool` - Matches tools. May optionally require a provided spec
-- `Usable` - Matches usable items
 - `Weapon` - Matches weapons
 
 **Available Slot Types**
@@ -118,6 +116,7 @@ For more information, examine the types in the asset editor.
 - `AdjustDurability` - Make changes to the target item's durability, handle item breakage.
 - `AdjustQuantity` - Make changes to the target item's quantity
 - `ChangeItem` - Transition the target item to different item types and/or item states. Existing item states can be matched with wildcards
-- `Conditional` - Execute a set of modifications only if a set of ItemMatchers succeed
+- `Conditional` - Execute a modification only if a set of ItemMatchers succeed
+- `Group` - Execute a set of modifications. Great to use with Conditional or Singulate.
 - `RelocateItemModification` - Move target item to an available slot and change the item target to its new location. Can be used for equipping and unequipping items and so much more.
 - `Singulate` - If the target item has a quantity greater than 1, execute a modification on only one of them and place the rest back in the User entity's inventory

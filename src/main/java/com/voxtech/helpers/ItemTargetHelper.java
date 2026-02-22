@@ -40,6 +40,21 @@ public class ItemTargetHelper {
         return itemData;
     }
 
+    public static TargetItemData refreshTargetItem(InteractionContext context) {
+        TargetItemData data = getTargetItem(context);
+        ItemStack refreshed = data.getContainer().getItemStack(data.getSlot());
+        if (refreshed == null && data.getItemStack() == null) {
+            return data;
+        }
+        if (refreshed != null && refreshed.equals(data.getItemStack())) {
+            return data;
+        }
+
+        data.setItem(refreshed);
+        putTargetItem(context, data);
+        return data;
+    }
+
     public static void putTargetItem(InteractionContext context, TargetItemData newItemContext) {
         DynamicMetaStore<InteractionContext> metaStore = context.getMetaStore();
 

@@ -31,7 +31,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemConditionInteraction.ItemMatcher.CODEC.register("ItemType", ItemTypeMatcher.class, ItemTypeMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Armor", ArmorMatcher.class, ArmorMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Weapon", WeaponMatcher.class, WeaponMatcher.CODEC);
-        ItemConditionInteraction.ItemMatcher.CODEC.register("Usable", UsableMatcher.class, UsableMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Group", GroupMatcher.class, GroupMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("PortalKey", PortalKeyMatcher.class, PortalKeyMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("DropOnDeath", DropOnDeathMatcher.class, DropOnDeathMatcher.CODEC);
@@ -39,13 +38,12 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemConditionInteraction.ItemMatcher.CODEC.register("Tool", ToolMatcher.class, ToolMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Glider", GliderMatcher.class, GliderMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Category", CategoryMatcher.class, CategoryMatcher.CODEC);
-        ItemConditionInteraction.ItemMatcher.CODEC.register("Interaction", InteractionMatcher.class, InteractionMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Resource", ResourceMatcher.class, ResourceMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Inventory", InventoryMatcher.class, InventoryMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("Slot", SlotMatcher.class, SlotMatcher.CODEC);
 
         SlotMatcher.Slot.CODEC.register("IndexedSlot", IndexedSlotMatcher.class, IndexedSlotMatcher.CODEC);
-        SlotMatcher.Slot.CODEC.register("ActiveHotbar", ActiveHotbarMatcher.class, ActiveUtilityMatcher.CODEC);
+        SlotMatcher.Slot.CODEC.register("ActiveHotbar", ActiveHotbarMatcher.class, ActiveHotbarMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("ActiveUtility", ActiveUtilityMatcher.class, ActiveUtilityMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("InteractionHeldItem", InteractionHeldItemMatcher.class, InteractionHeldItemMatcher.CODEC);
         SlotMatcher.Slot.CODEC.register("TargetArmorSlot", TargetArmorSlotMatcher.class, TargetArmorSlotMatcher.CODEC);
@@ -58,6 +56,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         ModifyItemInteraction.ItemModification.CODEC.register("Conditional", ConditionalModification.class, ConditionalModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("ChangeItem", ChangeItemModification.class, ChangeItemModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("RelocateItem", RelocateItemModification.class, RelocateItemModification.CODEC);
+        ModifyItemInteraction.ItemModification.CODEC.register("Group", GroupModification.class, GroupModification.CODEC);
     }
 
     @Override
@@ -68,6 +67,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         ModifyItemInteraction.ItemModification.CODEC.remove(ConditionalModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(ChangeItemModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(RelocateItemModification.class);
+        ModifyItemInteraction.ItemModification.CODEC.remove(GroupModification.class);
 
         SlotMatcher.Slot.CODEC.remove(IndexedSlotMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveHotbarMatcher.class);
@@ -84,7 +84,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemConditionInteraction.ItemMatcher.CODEC.remove(ItemTypeMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(ArmorMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(WeaponMatcher.class);
-        ItemConditionInteraction.ItemMatcher.CODEC.remove(UsableMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(GroupMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(PortalKeyMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(DropOnDeathMatcher.class);
@@ -92,7 +91,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemConditionInteraction.ItemMatcher.CODEC.remove(ToolMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(GliderMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(CategoryMatcher.class);
-        ItemConditionInteraction.ItemMatcher.CODEC.remove(InteractionMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(ResourceMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(InventoryMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(SlotMatcher.class);

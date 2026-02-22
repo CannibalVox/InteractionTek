@@ -35,7 +35,7 @@ public class PortalKeyMatcher extends ItemConditionInteraction.ItemMatcher {
             return false;
         }
 
-        if (requiredTypeIds.length == 0) {
+        if (requiredTypeIds == null || requiredTypeIds.length == 0) {
             return true;
         }
 

@@ -18,8 +18,8 @@ import javax.annotation.Nonnull;
 public class ActiveUtilityMatcher extends SlotMatcher.Slot {
 
     @Nonnull
-    public static final BuilderCodec<ActiveHotbarMatcher> CODEC = BuilderCodec
-            .builder(ActiveHotbarMatcher.class, ActiveHotbarMatcher::new, BASE_CODEC)
+    public static final BuilderCodec<ActiveUtilityMatcher> CODEC = BuilderCodec
+            .builder(ActiveUtilityMatcher.class, ActiveUtilityMatcher::new, BASE_CODEC)
             .documentation("This matcher will succeed if the current target item is in the User entity's active utility slot")
             .build();
 

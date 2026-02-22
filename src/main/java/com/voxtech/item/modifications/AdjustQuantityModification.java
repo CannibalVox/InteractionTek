@@ -51,13 +51,13 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
             ItemStackSlotTransaction transaction = targetContainer.addItemStackToSlot(targetSlot, targetItem.withQuantity(delta));
             ItemStack remainder = transaction.getRemainder();
 
-            if (!ItemStack.isEmpty(remainder) && !dontDropExtra) {
+            if (!ItemStack.isEmpty(remainder) && !dontSpillOverExtra) {
                 ItemStackTransaction stackTransaction = inventory.getCombinedHotbarFirst().addItemStack(remainder);
                 remainder = stackTransaction.getRemainder();
             }
 
             if (!ItemStack.isEmpty(remainder)) {
-                if (dontSpillOverExtra) {
+                if (dontDropExtra) {
                     return false;
                 }
 
@@ -69,7 +69,7 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
 
         int toRemove = -delta;
 
-            ItemStackSlotTransaction transaction = targetContainer.removeItemStackFromSlot(targetSlot, targetItem, toRemove);
-            return transaction.succeeded();
+        ItemStackSlotTransaction transaction = targetContainer.removeItemStackFromSlot(targetSlot, targetItem, toRemove);
+        return transaction.succeeded();
     }
 }

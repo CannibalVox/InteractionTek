@@ -19,6 +19,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.validators.ValueOr;
 
@@ -45,17 +46,15 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
             object -> object.ignoreNoDurability)
             .documentation("If true, attempting to operate on an item that does not have durability (i.e. max durability of 0) will not fail, it will simply have no effect.")
             .add()
-        .append(new KeyedCodec<>("BrokenItem", Codec.STRING),
-            (object, brokenItem) -> object.brokenItem = brokenItem,
-    object -> object.brokenItem)
-            .documentation("If provided, the item will have its item id changed to this in the event that this modification breaks the item. This will have no effect if the item is already broken.  Setting this value to 'Empty' will destroy the item when it breaks.")
-            .addValidator((new ValueOr<>("Empty", Item.VALIDATOR_CACHE.getValidator())).late())
+        .append(new KeyedCodec<>("BreakModification", ModifyItemInteraction.ItemModification.CODEC),
+            (object, breakModification) -> object.breakModification = breakModification,
+    object -> object.breakModification)
+            .documentation("If provided, the modification will be executed in the event that this modification breaks the item. This will have no effect if the item is already broken.")
             .add()
-        .append(new KeyedCodec<>("UnbrokenItem", Codec.STRING),
-            (object, unbrokenItem) -> object.unbrokenItem = unbrokenItem,
-            object -> object.unbrokenItem)
-            .documentation("If provided, the item will have its item id changed to this in the event that this modification caused the item to go from broken to not broken")
-            .addValidator(Item.VALIDATOR_CACHE.getValidator().late())
+        .append(new KeyedCodec<>("UnbreakModification", ModifyItemInteraction.ItemModification.CODEC),
+            (object, unbreakModification) -> object.unbreakModification = unbreakModification,
+            object -> object.unbreakModification)
+            .documentation("If provided, the modification will be executed in the event that this modification caused the item to go from broken to not broken")
             .add()
         .append(new KeyedCodec<>("NotifyOnBreak", Codec.BOOLEAN),
             (object, notifyOnBreak) -> object.notifyOnBreak = notifyOnBreak,
@@ -73,8 +72,8 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
     private double delta;
     private boolean ignoreBroken;
     private boolean ignoreNoDurability;
-    private String unbrokenItem;
-    private String brokenItem;
+    private ModifyItemInteraction.ItemModification breakModification;
+    private ModifyItemInteraction.ItemModification unbreakModification;
     private boolean notifyOnBreak;
     private String notifyOnBreakMessage;
 
@@ -92,24 +91,41 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         }
 
         ItemStack newItem = targetItem.withIncreasedDurability(delta);
+        ItemStackSlotTransaction slotTransaction = targetContainer.setItemStackForSlot(targetSlot, newItem);
+        if (!slotTransaction.succeeded()) {
+            return false;
+        }
 
-        boolean isBroken = targetItem.isBroken();
+        boolean isBroken = newItem.isBroken();
 
         // Convert the item if it broke or if it unbroke
-        if (isBroken && !wasBroken && brokenItem != null) {
-            if ("Empty".equals(brokenItem)) {
-                newItem = null;
-            } else {
-                newItem = new ItemStack(brokenItem, targetItem.getQuantity(), targetItem.getMetadata());
+        ModifyItemInteraction.ItemModification execute = null;
+        if (isBroken && !wasBroken && breakModification != null) {
+            execute = breakModification;
+        } else if (!isBroken && wasBroken && unbreakModification != null) {
+            execute = unbreakModification;
+        }
+
+        boolean transformed = false;
+
+        if (execute != null) {
+            if (!execute.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, newItem)) {
+                return false;
             }
-        } else if (!isBroken && wasBroken && unbrokenItem != null) {
-            newItem = new ItemStack(unbrokenItem, targetItem.getQuantity(), targetItem.getMetadata());
+
+            ItemTargetHelper.TargetItemData data = ItemTargetHelper.refreshTargetItem(context);
+            if (data.getItemStack() == null || data.getContainer() != targetContainer || data.getSlot() != targetSlot ||
+                    !data.getItemStack().getItemId().equals(newItem.getItemId())) {
+                // An obvious change was made to the item and we should not announce breakage unless the user specifically
+                // requests it
+                transformed = true;
+            }
         }
 
         // if it broke, then notify if there was no transformation or if we explicitly say to
         // we'll always notify if there's no transformation just because the player has to have SOME indication that something
         // changed
-        if (playerComponent != null && isBroken && !wasBroken && ((newItem != null && targetItem.getItemId().equals(newItem.getItemId())) || notifyOnBreak)) {
+        if (playerComponent != null && isBroken && !wasBroken && (!transformed || notifyOnBreak)) {
             Message itemNameMessage = Message.translation(targetItem.getItem().getTranslationKey());
             String messageKey = this.notifyOnBreakMessage != null ? this.notifyOnBreakMessage : "server.general.repair.itemBroken";
             playerComponent.sendMessage(Message.translation(messageKey).param("itemName", itemNameMessage).color("#ff5555"));
@@ -122,7 +138,6 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
             }
         }
 
-        ItemStackSlotTransaction slotTransaction = targetContainer.setItemStackForSlot(targetSlot, newItem);
-        return slotTransaction.succeeded();
+        return true;
     }
 }

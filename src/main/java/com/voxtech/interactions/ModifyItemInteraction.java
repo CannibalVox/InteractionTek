@@ -90,7 +90,11 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
 
         for (ItemModification modification : itemModifications) {
             boolean success = modification.modifyItemStack(world, context.getEntity(), buffer, context, inventory, targetContainer, (short)targetSlot, targetItemStack);
-            targetItemStack = targetContainer.getItemStack((short)targetSlot);
+
+            ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);
+            targetContainer = refreshed.getContainer();
+            targetSlot = refreshed.getSlot();
+            targetItemStack = refreshed.getItemStack();
 
             if (!success) {
                 context.getState().state = InteractionState.Failed;

@@ -80,7 +80,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
                 continue;
             }
 
-            if (attemptSlot(ref, buffer, context, targetContainer, toContainer, targetSlot, activeSlot, targetItem)) {
+            if (attemptSlot(ref, buffer, context, targetContainer, toContainer, targetSlot, i, targetItem)) {
                 return true;
             }
         }

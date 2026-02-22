@@ -37,23 +37,17 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
             object -> object.itemMatchType)
             .documentation("Whether all of the conditions or just any need to match in order for the modifications to execute")
             .add()
-        .append(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ModifyItemInteraction.ItemModification.CODEC, ModifyItemInteraction.ItemModification[]::new)),
-            (object, itemModifications) -> object.itemModifications = itemModifications,
-            object -> object.itemModifications)
-            .documentation("The modifications to execute. They will be executed in the order they are provided.")
+        .append(new KeyedCodec<>("Modification",ModifyItemInteraction.ItemModification.CODEC),
+            (object, modification) -> object.modification = modification,
+            object -> object.modification)
+            .documentation("The modification to execute")
             .addValidator(Validators.nonNull())
-            .add()
-        .append(new KeyedCodec<>("ContinueOnFailure", Codec.BOOLEAN),
-            (object, continueOnFailure) -> object.continueOnFailure = continueOnFailure,
-            object -> object.continueOnFailure)
-            .documentation("If true, all modifications will be attempted, even if one fails. If false, execution will immediately halt if a modification fails.")
             .add()
         .build();
 
     private ItemMatchType itemMatchType = ItemMatchType.All;
     private ItemConditionInteraction.ItemMatcher[] itemMatchers;
-    private ModifyItemInteraction.ItemModification[] itemModifications;
-    private boolean continueOnFailure;
+    private ModifyItemInteraction.ItemModification modification;
 
     @Override
     public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
@@ -61,20 +55,7 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
             return true;
         }
 
-        boolean retVal = true;
-        for (ModifyItemInteraction.ItemModification modification : itemModifications) {
-            if (!modification.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, targetItem)) {
-                if (!continueOnFailure) {
-                    return false;
-                }
-
-                retVal = false;
-            }
-
-            targetItem = targetContainer.getItemStack(targetSlot);
-        }
-
-        return retVal;
+        return modification.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, targetItem);
     }
 
     private boolean targetItemMatches(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {

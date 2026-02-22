@@ -36,6 +36,9 @@ public class CategoryMatcher extends ItemConditionInteraction.ItemMatcher {
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
         String[] itemCategories = targetItem.getItem().getCategories();
+        if (itemCategories == null) {
+            return false;
+        }
 
         for(String category : itemCategories) {
             if (categories.contains(category)) {
