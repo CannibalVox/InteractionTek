@@ -36,9 +36,10 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
     public static final BuilderCodec<ModifyItemInteraction> CODEC = BuilderCodec
         .builder(ModifyItemInteraction.class, ModifyItemInteraction::new, SimpleInteraction.CODEC)
         .documentation("This interaction executes a series of modifications against the target item. This interaction will fail if any of the modifications fail.")
-        .append(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ItemModification.CODEC, ItemModification[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ItemModification.CODEC, ItemModification[]::new)),
             (object, itemModifications) -> object.itemModifications = itemModifications,
-            object -> object.itemModifications)
+            object -> object.itemModifications,
+            (object, parent) -> object.itemModifications = parent.itemModifications)
             .documentation("The modifications to execute. They will be executed in the order they are provided")
             .addValidator(Validators.nonNull())
             .add()
@@ -120,9 +121,10 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
         @Nonnull
         public static final BuilderCodec<ItemModification> BASE_CODEC = BuilderCodec
             .abstractBuilder(ItemModification.class)
-            .append(new KeyedCodec<>("FailEmptyItem", Codec.BOOLEAN),
+            .appendInherited(new KeyedCodec<>("FailEmptyItem", Codec.BOOLEAN),
                 (object, failEmptyItem) -> object.failEmptyItem = failEmptyItem,
-                object -> object.failEmptyItem)
+                object -> object.failEmptyItem,
+                (object, parent) -> object.failEmptyItem = parent.failEmptyItem)
                 .documentation("If true, this modification will automatically fail if an empty slot is passed to it.  If false, empty slots will not fail, even if it means that the modification can take no action.")
                 .add()
             .build();

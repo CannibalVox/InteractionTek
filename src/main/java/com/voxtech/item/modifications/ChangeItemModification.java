@@ -29,9 +29,10 @@ public class ChangeItemModification extends ModifyItemInteraction.ItemModificati
     public static final BuilderCodec<ChangeItemModification> CODEC = BuilderCodec
         .builder(ChangeItemModification.class, ChangeItemModification::new, BASE_CODEC)
         .documentation("This modification will transform the target item between item states using a set of provided transformations.  Only the first matching transformation in the list will be executed. This modification will fail if no transformation can be executed.")
-        .append(new KeyedCodec<>("Transformations", new ArrayCodec<>(ItemTransition.CODEC, ItemTransition[]::new)),
+        .appendInherited(new KeyedCodec<>("Transformations", new ArrayCodec<>(ItemTransition.CODEC, ItemTransition[]::new)),
             (object, transformations) -> object.transformations = transformations,
-    object -> object.transformations)
+    object -> object.transformations,
+            (object, parent) -> object.transformations = parent.transformations)
             .documentation("List of transformations to attempt.  The first matching SourceItem/SourceItemState to match the target item will cause the item to be converted to the provided TargetItem/TargetItemState")
             .add()
         .append(new KeyedCodec<>("DropDurability", Codec.BOOLEAN),

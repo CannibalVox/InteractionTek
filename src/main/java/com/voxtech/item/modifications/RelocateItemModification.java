@@ -28,16 +28,18 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
     public static final BuilderCodec<RelocateItemModification> CODEC = BuilderCodec
         .builder(RelocateItemModification.class, RelocateItemModification::new, BASE_CODEC)
         .documentation("This modification will move the current target item stack to any one slot where it can be placed in the provided inventory section. Then, the interaction chain's target item will change to the item's new slot. If the item cannot be placed successfully, the modification will fail.")
-        .append(new KeyedCodec<>("InventorySectionId", Codec.INTEGER),
+        .appendInherited(new KeyedCodec<>("InventorySectionId", Codec.INTEGER),
             (object, inventorySectionId) -> object.inventorySectionId = inventorySectionId,
-            object -> object.inventorySectionId)
+            object -> object.inventorySectionId,
+            (object, parent) -> object.inventorySectionId = parent.inventorySectionId)
             .documentation("The inventory section id of the inventory section the target item should be relocated to")
             .addValidator(Validators.nonNull())
             .addValidator(Validators.lessThan(0))
             .add()
-        .append(new KeyedCodec<>("Slot", SlotMatcher.Slot.CODEC),
+        .appendInherited(new KeyedCodec<>("Slot", SlotMatcher.Slot.CODEC),
             (object, slotMatcher) -> object.slotMatcher = slotMatcher,
-            object -> object.slotMatcher)
+            object -> object.slotMatcher,
+            (object, parent) -> object.slotMatcher = parent.slotMatcher)
             .documentation("If provided, a slot must pass this matcher for the target item to be placed there.")
             .add()
         .append(new KeyedCodec<>("SkipRetarget", Codec.BOOLEAN),

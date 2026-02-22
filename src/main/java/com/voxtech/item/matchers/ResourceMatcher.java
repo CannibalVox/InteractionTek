@@ -24,9 +24,10 @@ public class ResourceMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<ResourceMatcher> CODEC = BuilderCodec
         .builder(ResourceMatcher.class, ResourceMatcher::new, BASE_CODEC)
         .documentation("This matcher will succeed if the item has resource types")
-        .append(new KeyedCodec<>("ResourceConditions", new ArrayCodec<>(ResourceCondition.CODEC, ResourceCondition[]::new)),
+        .appendInherited(new KeyedCodec<>("ResourceConditions", new ArrayCodec<>(ResourceCondition.CODEC, ResourceCondition[]::new)),
             (object, resourceConditions) -> object.resourceConditions = resourceConditions,
-            object -> object.resourceConditions)
+            object -> object.resourceConditions,
+            (object, parent) -> object.resourceConditions = parent.resourceConditions)
             .documentation("If provided, the matcher will only succeed if one of the item's resource types matches one of the provided resource conditions")
             .add()
         .afterDecode(object -> {
@@ -72,16 +73,18 @@ public class ResourceMatcher extends ItemConditionInteraction.ItemMatcher {
         public static final BuilderCodec<ResourceCondition> CODEC = BuilderCodec
             .builder(ResourceCondition.class, ResourceCondition::new)
             .documentation("The conditions to match against an item's resource type")
-            .append(new KeyedCodec<>("ResourceId", Codec.STRING),
+            .appendInherited(new KeyedCodec<>("ResourceId", Codec.STRING),
                 (object, resourceId) -> object.resourceId = resourceId,
-                object -> object.resourceId)
+                object -> object.resourceId,
+                (object, parent) -> object.resourceId = parent.resourceId)
                 .documentation("The resource type to match")
                 .addValidator(Validators.nonNull())
                 .addValidator(Validators.nonEmptyString())
                 .add()
-            .append(new KeyedCodec<>("MinimumQuantity", Codec.INTEGER),
+            .appendInherited(new KeyedCodec<>("MinimumQuantity", Codec.INTEGER),
                 (object, minimumQuantity) -> object.minimumQuantity = minimumQuantity,
-                object -> object.minimumQuantity)
+                object -> object.minimumQuantity,
+                (object, parent) -> object.minimumQuantity = parent.minimumQuantity)
                 .documentation("If provided, the matching item resource must also provided at least this much of the resource")
                 .addValidator(Validators.greaterThanOrEqual(1))
                 .add()

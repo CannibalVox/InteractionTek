@@ -23,9 +23,10 @@ public class CategoryMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<CategoryMatcher> CODEC = BuilderCodec
         .builder(CategoryMatcher.class, CategoryMatcher::new, BASE_CODEC)
         .documentation("This matcher will succeed if the target item belongs to one of the provided categories.")
-        .append(new KeyedCodec<>("Categories", new SetCodec<>(Codec.STRING, HashSet<String>::new, true)),
+        .appendInherited(new KeyedCodec<>("Categories", new SetCodec<>(Codec.STRING, HashSet<String>::new, true)),
             (object, categories) -> object.categories = categories,
-            object -> object.categories)
+            object -> object.categories,
+            (object, parent) -> object.categories = parent.categories)
             .documentation("The list of categories to consider.")
             .addValidator(Validators.nonNull())
             .add()

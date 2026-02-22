@@ -25,9 +25,10 @@ public class InventoryMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<InventoryMatcher> CODEC = BuilderCodec
         .builder(InventoryMatcher.class, InventoryMatcher::new, BASE_CODEC)
         .documentation("This matcher will succeed if the target item is located in an inventory section specified by one of the provided section ids")
-        .append(new KeyedCodec<>("SectionIds", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
+        .appendInherited(new KeyedCodec<>("SectionIds", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
             (object, sectionIds) -> object.sectionIds = sectionIds,
-            object -> object.sectionIds)
+            object -> object.sectionIds,
+            (object, parent) -> object.sectionIds = parent.sectionIds)
             .documentation("The list of inventory section ids to allow")
             .addValidator(Validators.nonNull())
             .add()

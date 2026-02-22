@@ -22,9 +22,10 @@ public class SingulateModification extends ModifyItemInteraction.ItemModificatio
     public static final BuilderCodec<SingulateModification> CODEC = BuilderCodec
         .builder(SingulateModification.class, SingulateModification::new, BASE_CODEC)
         .documentation("Runs another item modification, but removes all but one of the target item's quantity first. Afterwards, the excess is added to the entity's inventory.  This may result in the item re-stacking with the target item if they are still compatible after the modification.")
-        .append(new KeyedCodec<>("Modification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("Modification", ModifyItemInteraction.ItemModification.CODEC),
             (object, modification) -> object.modification = modification,
-object -> object.modification)
+            object -> object.modification,
+            (object, parent) -> object.modification = parent.modification)
             .documentation("The modification to run after singulating the item")
             .add()
         .build();

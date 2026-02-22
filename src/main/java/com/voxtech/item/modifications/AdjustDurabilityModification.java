@@ -46,14 +46,16 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
             object -> object.ignoreNoDurability)
             .documentation("If true, attempting to operate on an item that does not have durability (i.e. max durability of 0) will not fail, it will simply have no effect.")
             .add()
-        .append(new KeyedCodec<>("BreakModification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("BreakModification", ModifyItemInteraction.ItemModification.CODEC),
             (object, breakModification) -> object.breakModification = breakModification,
-    object -> object.breakModification)
+    object -> object.breakModification,
+            (object, parent) -> object.breakModification = parent.breakModification)
             .documentation("If provided, the modification will be executed in the event that this modification breaks the item. This will have no effect if the item is already broken.")
             .add()
-        .append(new KeyedCodec<>("UnbreakModification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("UnbreakModification", ModifyItemInteraction.ItemModification.CODEC),
             (object, unbreakModification) -> object.unbreakModification = unbreakModification,
-            object -> object.unbreakModification)
+            object -> object.unbreakModification,
+            (object, parent) -> object.unbreakModification = parent.unbreakModification)
             .documentation("If provided, the modification will be executed in the event that this modification caused the item to go from broken to not broken")
             .add()
         .append(new KeyedCodec<>("NotifyOnBreak", Codec.BOOLEAN),

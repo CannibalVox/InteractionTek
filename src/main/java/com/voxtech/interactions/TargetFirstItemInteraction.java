@@ -34,9 +34,10 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
     public static final BuilderCodec<TargetFirstItemInteraction> CODEC = BuilderCodec
         .builder(TargetFirstItemInteraction.class, TargetFirstItemInteraction::new, SimpleItemInteraction.CODEC)
         .documentation("Scans the User entity's inventory until it finds an item slot that satisfies the provided matchers. If none is found, this interaction will fail.")
-        .append(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
-            object -> object.itemMatchers)
+            object -> object.itemMatchers,
+            (object, parent) -> object.itemMatchers = parent.itemMatchers)
             .documentation("The item matchers to compare against each slot")
             .addValidator(Validators.nonNull())
             .add()
@@ -45,9 +46,10 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
             object -> object.itemMatchType)
             .documentation("Whether all or any matchers need to match for a slot to be chosen")
             .add()
-        .append(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
+        .appendInherited(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
             (object, inventorySections) -> object.inventorySections = inventorySections,
-            object -> object.inventorySections)
+            object -> object.inventorySections,
+            (object, parent) -> object.inventorySections = parent.inventorySections)
             .documentation("If provided, decides which sections to scan and what order to scan them in. A sensible default that scans all adventure mode slots will be used otherwise.")
             .add()
         .build();

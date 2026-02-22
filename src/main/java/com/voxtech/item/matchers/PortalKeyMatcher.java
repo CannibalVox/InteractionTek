@@ -20,9 +20,10 @@ public class PortalKeyMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<PortalKeyMatcher> CODEC = BuilderCodec
         .builder(PortalKeyMatcher.class, PortalKeyMatcher::new, BASE_CODEC)
         .documentation("This matcher will succeed if the target item is a portal key")
-        .append(new KeyedCodec<>("RequiredTypeIds", new ArrayCodec<>(Codec.STRING, String[]::new)),
+        .appendInherited(new KeyedCodec<>("RequiredTypeIds", new ArrayCodec<>(Codec.STRING, String[]::new)),
             (object, typeIds) -> object.requiredTypeIds = typeIds,
-            object -> object.requiredTypeIds)
+            object -> object.requiredTypeIds,
+            (object, parent) -> object.requiredTypeIds = parent.requiredTypeIds)
             .documentation("If included, the matcher will fail unless the portal key's typeId matches one of these values")
             .add()
         .build();

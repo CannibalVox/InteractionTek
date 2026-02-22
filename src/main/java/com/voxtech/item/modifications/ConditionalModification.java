@@ -26,9 +26,10 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
     public static final BuilderCodec<ConditionalModification> CODEC = BuilderCodec
         .builder(ConditionalModification.class, ConditionalModification::new, BASE_CODEC)
         .documentation("Execute a list of item modifications only if the target item matches a set of item matchers. If the target item does not match, this modification doesn't fail, it simply does not take any action.")
-        .append(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
-            object -> object.itemMatchers)
+            object -> object.itemMatchers,
+            (object, parent) -> object.itemMatchers = parent.itemMatchers)
             .documentation("A set of conditions that must match the target item for the modifications to execute")
             .addValidator(Validators.nonNull())
             .add()
@@ -37,9 +38,10 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
             object -> object.itemMatchType)
             .documentation("Whether all of the conditions or just any need to match in order for the modifications to execute")
             .add()
-        .append(new KeyedCodec<>("Modification",ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("Modification",ModifyItemInteraction.ItemModification.CODEC),
             (object, modification) -> object.modification = modification,
-            object -> object.modification)
+            object -> object.modification,
+            (object, parent) -> object.modification = parent.modification)
             .documentation("The modification to execute")
             .addValidator(Validators.nonNull())
             .add()

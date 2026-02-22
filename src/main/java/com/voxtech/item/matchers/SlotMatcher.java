@@ -21,9 +21,10 @@ public class SlotMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<SlotMatcher> CODEC = BuilderCodec
         .builder(SlotMatcher.class, SlotMatcher::new, BASE_CODEC)
         .documentation("This matcher succeeds if the target item slot matches any of the provided slot data conditions")
-        .append(new KeyedCodec<>("Slots", new ArrayCodec<>(Slot.CODEC, Slot[]::new)),
+        .appendInherited(new KeyedCodec<>("Slots", new ArrayCodec<>(Slot.CODEC, Slot[]::new)),
             (object, slot) -> object.slots = slot,
-            object -> object.slots)
+            object -> object.slots,
+            (object, parent) -> object.slots = parent.slots)
             .documentation("The slot data to compare against the target item's slot")
             .addValidator(Validators.nonNull())
             .add()

@@ -22,9 +22,10 @@ public class ItemStateMatcher extends ItemConditionInteraction.ItemMatcher {
         ItemStateMatcher.class, ItemStateMatcher::new, BASE_CODEC
     )
         .documentation("Matcher succeeds if the target item is in any of the provided item states. 'default' means no state")
-        .append(new KeyedCodec<>("ItemStates", new ArrayCodec<>(Codec.STRING, String[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemStates", new ArrayCodec<>(Codec.STRING, String[]::new)),
             (object, states) -> object.itemStates = states,
-            object -> object.itemStates)
+            object -> object.itemStates,
+            (object, parent) -> object.itemStates = parent.itemStates)
             .documentation("The item states to test the target item against")
             .addValidator(Validators.nonNull())
             .add()

@@ -25,9 +25,10 @@ public class GroupModification extends ModifyItemInteraction.ItemModification {
     public static final BuilderCodec<GroupModification> CODEC = BuilderCodec
         .builder(GroupModification.class, GroupModification::new, BASE_CODEC)
         .documentation("Execute a list of item modifications. Great to use with other modifications such as Singulate and Conditional.")
-        .append(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ModifyItemInteraction.ItemModification.CODEC, ModifyItemInteraction.ItemModification[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ModifyItemInteraction.ItemModification.CODEC, ModifyItemInteraction.ItemModification[]::new)),
             (object, itemModifications) -> object.itemModifications = itemModifications,
-            object -> object.itemModifications)
+            object -> object.itemModifications,
+            (object, parent) -> object.itemModifications = parent.itemModifications)
             .documentation("The modifications to execute. They will be executed in the order they are provided.")
             .addValidator(Validators.nonNull())
             .add()

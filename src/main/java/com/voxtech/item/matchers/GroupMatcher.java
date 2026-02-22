@@ -26,9 +26,10 @@ public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
             interaction -> interaction.itemMatchType)
         .documentation("Whether all, any, or no matchers need to match for this interaction to succeed")
         .add()
-        .append(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
             (object, matchers) -> object.itemMatchers = matchers,
-            object -> object.itemMatchers)
+            object -> object.itemMatchers,
+            (object, parent) -> object.itemMatchers = parent.itemMatchers)
         .documentation("These matchers test the target item to decide if the interaction fails")
         .add()
         .build();

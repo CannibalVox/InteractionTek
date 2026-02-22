@@ -23,10 +23,10 @@ public class ItemTypeMatcher extends ItemConditionInteraction.ItemMatcher {
         ItemTypeMatcher.class, ItemTypeMatcher::new, BASE_CODEC
     )
         .documentation("Matcher succeeds if the target item is of any of the provided item types")
-        .append(new KeyedCodec<>("ItemTypes", new ArrayCodec<>(Codec.STRING, String[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemTypes", new ArrayCodec<>(Codec.STRING, String[]::new)),
             (object, types) -> object.itemTypes = types,
-            object -> object.itemTypes
-            )
+            object -> object.itemTypes,
+            (object, parent) -> object.itemTypes = parent.itemTypes)
             .documentation("List of item types to allow")
             .addValidator(Item.VALIDATOR_CACHE.getArrayValidator().late())
             .addValidator(Validators.nonNull())

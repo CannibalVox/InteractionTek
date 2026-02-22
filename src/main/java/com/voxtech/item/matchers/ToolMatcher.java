@@ -25,29 +25,30 @@ public class ToolMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<ToolMatcher> CODEC = BuilderCodec
-            .builder(ToolMatcher.class, ToolMatcher::new, BASE_CODEC)
-            .documentation("This matcher will succeed if the target item is a tool")
-            .append(new KeyedCodec<>("ToolConditions", new ArrayCodec<>(ToolCondition.CODEC, ToolCondition[]::new)),
-                (object, toolConditions) -> object.toolConditions = toolConditions,
-                object -> object.toolConditions)
-                .documentation("If included, this matcher will only succeed if one of the tool's specs matches one of the provided conditions.")
-                .add()
-            .afterDecode(object -> {
-                object.toolConditionsMap = new HashMap<>();
+        .builder(ToolMatcher.class, ToolMatcher::new, BASE_CODEC)
+        .documentation("This matcher will succeed if the target item is a tool")
+        .appendInherited(new KeyedCodec<>("ToolConditions", new ArrayCodec<>(ToolCondition.CODEC, ToolCondition[]::new)),
+            (object, toolConditions) -> object.toolConditions = toolConditions,
+            object -> object.toolConditions,
+            (object, parent) -> object.toolConditions = parent.toolConditions)
+            .documentation("If included, this matcher will only succeed if one of the tool's specs matches one of the provided conditions.")
+            .add()
+        .afterDecode(object -> {
+            object.toolConditionsMap = new HashMap<>();
 
-                if (object.toolConditions == null) {
-                    return;
-                }
+            if (object.toolConditions == null) {
+                return;
+            }
 
-                for (ToolCondition condition : object.toolConditions) {
-                    if (!object.toolConditionsMap.containsKey(condition.gatherType)) {
-                        object.toolConditionsMap.put(condition.gatherType, new ArrayList<>());
-                    }
-                    List<ToolCondition> conditionList = object.toolConditionsMap.get(condition.gatherType);
-                    conditionList.add(condition);
+            for (ToolCondition condition : object.toolConditions) {
+                if (!object.toolConditionsMap.containsKey(condition.gatherType)) {
+                    object.toolConditionsMap.put(condition.gatherType, new ArrayList<>());
                 }
-            })
-            .build();
+                List<ToolCondition> conditionList = object.toolConditionsMap.get(condition.gatherType);
+                conditionList.add(condition);
+            }
+        })
+        .build();
 
     private ToolCondition[] toolConditions;
     private Map<String, List<ToolCondition>> toolConditionsMap;
@@ -83,22 +84,23 @@ public class ToolMatcher extends ItemConditionInteraction.ItemMatcher {
 
         @Nonnull
         public static final BuilderCodec<ToolCondition> CODEC = BuilderCodec.
-                builder(ToolCondition.class, ToolCondition::new)
-                .documentation("Specifies a set of requirements to compare a tool's specs against")
-                .append(new KeyedCodec<>("GatherType", Codec.STRING),
-                    (object, gatherType) -> object.gatherType = gatherType,
-                    object -> object.gatherType)
-                    .documentation("This tool condition will only match a tool spec if the spec's gather type matches this value")
-                    .addValidator(Validators.nonNull())
-                    .addValidator(Validators.nonEmptyString())
-                    .add()
-                .append(new KeyedCodec<>("MinimumQuality", Codec.INTEGER),
-                    (object, minimumQuality) -> object.minimumQuality = minimumQuality,
-                    object -> object.minimumQuality)
-                    .documentation("If provided, a tool spec's quality must be greater than or equal to this value in order to match")
-                    .addValidator(Validators.greaterThanOrEqual(0))
-                    .add()
-                .build();
+            builder(ToolCondition.class, ToolCondition::new)
+            .documentation("Specifies a set of requirements to compare a tool's specs against")
+            .appendInherited(new KeyedCodec<>("GatherType", Codec.STRING),
+                (object, gatherType) -> object.gatherType = gatherType,
+                object -> object.gatherType,
+                (object, parent) -> object.gatherType = parent.gatherType)
+                .documentation("This tool condition will only match a tool spec if the spec's gather type matches this value")
+                .addValidator(Validators.nonNull())
+                .addValidator(Validators.nonEmptyString())
+                .add()
+            .append(new KeyedCodec<>("MinimumQuality", Codec.INTEGER),
+                (object, minimumQuality) -> object.minimumQuality = minimumQuality,
+                object -> object.minimumQuality)
+                .documentation("If provided, a tool spec's quality must be greater than or equal to this value in order to match")
+                .addValidator(Validators.greaterThanOrEqual(0))
+                .add()
+            .build();
 
         private String gatherType;
         private Integer minimumQuality;

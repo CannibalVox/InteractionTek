@@ -33,9 +33,10 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
         interaction -> interaction.itemMatchType)
         .documentation("Whether all or any matchers need to match for this interaction to succeed")
         .add()
-    .append(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
+    .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
         (object, matchers) -> object.itemMatchers = matchers,
-        object -> object.itemMatchers)
+        object -> object.itemMatchers,
+        (object, parent) -> object.itemMatchers = parent.itemMatchers)
         .documentation("These matchers test the target item to decide if the interaction fails")
         .add()
     .build();

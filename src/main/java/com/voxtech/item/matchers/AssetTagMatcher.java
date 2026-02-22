@@ -24,9 +24,10 @@ public class AssetTagMatcher extends ItemConditionInteraction.ItemMatcher {
     public static final BuilderCodec<AssetTagMatcher> CODEC = BuilderCodec
         .builder(AssetTagMatcher.class, AssetTagMatcher::new, BASE_CODEC)
         .documentation("This item matcher will succeed if the target item has any of the provided asset tags.")
-        .append(new KeyedCodec<>("AssetTags", new ArrayCodec<>(Codec.STRING, String[]::new)),
+        .appendInherited(new KeyedCodec<>("AssetTags", new ArrayCodec<>(Codec.STRING, String[]::new)),
             (object, assetTags) -> object.assetTags = assetTags,
-            object -> object.assetTags)
+            object -> object.assetTags,
+            (object, parent) -> object.assetTags = parent.assetTags)
             .documentation("The asset tags to match against the item")
             .addValidator(Validators.nonNull())
             .add()
