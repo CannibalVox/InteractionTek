@@ -120,12 +120,12 @@ public class RandomBranchInteraction extends Interaction {
 
     @Override
     public boolean needsRemoteSync() {
-        return false;
+        return true;
     }
 
     @Override
     public WaitForDataFrom getWaitForDataFrom() {
-        return WaitForDataFrom.None;
+        return WaitForDataFrom.Server;
     }
 
     public static class Branch {

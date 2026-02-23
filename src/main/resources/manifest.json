@@ -11,7 +11,9 @@
     ],
     "DisabledByDefault": false,
     "IncludesAssetPack": false,
-    "Dependencies": {},
+    "Dependencies": {
+        "Hytale:InteractionModule": "*"
+    },
     "OptionalDependencies": {},
     "ServerVersion": "2026.02.19-1a311a592",
     "Main": "com.voxtech.InteractionTekPlugin"

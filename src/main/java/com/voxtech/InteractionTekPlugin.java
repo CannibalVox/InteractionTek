@@ -3,10 +3,7 @@ package com.voxtech;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import com.voxtech.interactions.ItemConditionInteraction;
-import com.voxtech.interactions.ModifyItemInteraction;
-import com.voxtech.interactions.RandomBranchInteraction;
-import com.voxtech.interactions.TargetFirstItemInteraction;
+import com.voxtech.interactions.*;
 import com.voxtech.item.matchers.*;
 import com.voxtech.item.matchers.slot.*;
 import com.voxtech.item.modifications.*;
@@ -25,6 +22,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.register("TekTargetFirstItem", TargetFirstItemInteraction.class, TargetFirstItemInteraction.CODEC);
         Interaction.CODEC.register("TekModifyItem", ModifyItemInteraction.class, ModifyItemInteraction.CODEC);
         Interaction.CODEC.register("TekRandomBranch", RandomBranchInteraction.class, RandomBranchInteraction.CODEC);
+        Interaction.CODEC.register("TekInterruptSelf", InterruptSelfInteraction.class, InterruptSelfInteraction.CODEC);
 
         ItemConditionInteraction.ItemMatcher.CODEC.register("Durability", DurabilityMatcher.class, DurabilityMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("EmptySlot", EmptySlotMatcher.class, EmptySlotMatcher.CODEC);
@@ -101,5 +99,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.remove(TargetFirstItemInteraction.class);
         Interaction.CODEC.remove(ModifyItemInteraction.class);
         Interaction.CODEC.remove(RandomBranchInteraction.class);
+        Interaction.CODEC.remove(InterruptSelfInteraction.class);
     }
 }
