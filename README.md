@@ -120,3 +120,35 @@ For more information, examine the types in the asset editor.
 - `Group` - Execute a set of modifications. Great to use with Conditional or Singulate.
 - `RelocateItemModification` - Move target item to an available slot and change the item target to its new location. Can be used for equipping and unequipping items and so much more.
 - `Singulate` - If the target item has a quantity greater than 1, execute a modification on only one of them and place the rest back in the User entity's inventory
+
+
+## Flow Control
+
+Assorted flow control interactions can be used to compose larger innovations.
+
+### TekInterruptSelf
+
+This interaction cancels the current interaction chain and any active forked 
+  interaction chains like Hypixel's `Interrupt` interaction does for interactions
+  running on targeted entities.  Afterward, the interaction chain will escape to
+  the root without running further interactions. 
+
+### TekRandomBranch
+
+This interaction will randomly select what interaction to run next from a list
+  of possible branches.  The selection will use a weighted random selection,
+  allowing some options to be more likely than others.
+
+**TekRandomBranch Fields**
+
+| Field Name | Type | Required? | Notes                                                                       |
+|------------|------|-----------|-----------------------------------------------------------------------------|
+| Branches | `Array`<br />(Element Type: `Branch`) | **Yes** | The list of options and their random weights. |
+
+**Branch Fields**
+
+| Field Name | Type | Required? | Notes                                                                         |
+|------------|------|-----------|-------------------------------------------------------------------------------|
+| Interaction | `Asset`<br />(Asset Type: `Interaction`) | **Yes** | The interaction to run if this branch is selected.                            |
+| Weight | `Integer`<br />(Default: 1) | **No** | The weight assigned to this branch.  Higher means more likely to be selected. |
+
