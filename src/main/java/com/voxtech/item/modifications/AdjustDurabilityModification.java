@@ -5,23 +5,19 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.protocol.SoundCategory;
-import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.asset.type.item.config.Item;
-import com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
-import com.voxtech.validators.ValueOr;
+import com.voxtech.transactions.TransactionState;
+import com.voxtech.transactions.postcommit.BreakItemPostCommit;
+import com.voxtech.transactions.rollback.ItemSlotRollback;
 
 import javax.annotation.Nonnull;
 
@@ -80,7 +76,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
     private String notifyOnBreakMessage;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         Player playerComponent = buffer.getComponent(ref, Player.getComponentType());
 
         if (targetItem.getMaxDurability() < 0.001) {
@@ -97,6 +93,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         if (!slotTransaction.succeeded()) {
             return false;
         }
+        transaction.queueRollback(new ItemSlotRollback(targetContainer, slotTransaction));
 
         boolean isBroken = newItem.isBroken();
 
@@ -111,7 +108,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         boolean transformed = false;
 
         if (execute != null) {
-            if (!execute.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, newItem)) {
+            if (!execute.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, newItem)) {
                 return false;
             }
 
@@ -128,16 +125,8 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         // we'll always notify if there's no transformation just because the player has to have SOME indication that something
         // changed
         if (playerComponent != null && isBroken && !wasBroken && (!transformed || notifyOnBreak)) {
-            Message itemNameMessage = Message.translation(targetItem.getItem().getTranslationKey());
-            String messageKey = this.notifyOnBreakMessage != null ? this.notifyOnBreakMessage : "server.general.repair.itemBroken";
-            playerComponent.sendMessage(Message.translation(messageKey).param("itemName", itemNameMessage).color("#ff5555"));
-            PlayerRef playerRefComponent = buffer.getComponent(ref, PlayerRef.getComponentType());
-            if (playerRefComponent != null) {
-                int soundEventIndex = SoundEvent.getAssetMap().getIndex("SFX_Item_Break");
-                if (soundEventIndex > Integer.MIN_VALUE) {
-                    SoundUtil.playSoundEvent2dToPlayer(playerRefComponent, soundEventIndex, SoundCategory.SFX);
-                }
-            }
+            String message = this.notifyOnBreakMessage != null ? this.notifyOnBreakMessage : "server.general.repair.itemBroken";
+            transaction.queuePostCommit(new BreakItemPostCommit(targetItem.getItem(), message));
         }
 
         return true;

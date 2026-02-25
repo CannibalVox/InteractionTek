@@ -16,6 +16,8 @@ import com.hypixel.hytale.server.core.inventory.transaction.SlotTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.transactions.TransactionState;
+import com.voxtech.transactions.rollback.ItemSlotRollback;
 import joptsimple.internal.Strings;
 
 import javax.annotation.Nonnull;
@@ -52,7 +54,7 @@ public class ChangeItemModification extends ModifyItemInteraction.ItemModificati
     private boolean keepDurabilitySameItem;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
 
         String originalItemId = targetItem.getItemId();
         String sourceState = targetItem.getItem().getStateForItem(targetItem.getItemId());
@@ -100,8 +102,12 @@ public class ChangeItemModification extends ModifyItemInteraction.ItemModificati
         }
 
         if (foundTransition.targetItem == null) {
-            SlotTransaction transaction = targetContainer.removeItemStackFromSlot(targetSlot);
-            return transaction.succeeded();
+            SlotTransaction itemTransaction = targetContainer.removeItemStackFromSlot(targetSlot);
+            if (!itemTransaction.succeeded()) {
+                return false;
+            }
+            transaction.queueRollback(new ItemSlotRollback(targetContainer, itemTransaction));
+            return true;
         }
 
         Item transformedItem = Item.getAssetMap().getAsset(foundTransition.targetItem);
@@ -127,7 +133,11 @@ public class ChangeItemModification extends ModifyItemInteraction.ItemModificati
         }
 
         ItemStackSlotTransaction slot = targetContainer.setItemStackForSlot(targetSlot, newItem);
-        return slot.succeeded();
+        if (!slot.succeeded()) {
+            return false;
+        }
+        transaction.queueRollback(new ItemSlotRollback(targetContainer, slot));
+        return true;
     }
 
     public static class ItemTransition {

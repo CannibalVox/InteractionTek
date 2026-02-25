@@ -16,6 +16,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 
@@ -43,10 +44,10 @@ public class GroupModification extends ModifyItemInteraction.ItemModification {
     private boolean continueOnFailure;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         boolean retVal = true;
         for (ModifyItemInteraction.ItemModification modification : itemModifications) {
-            if (!modification.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, targetItem)) {
+            if (!modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem)) {
                 if (!continueOnFailure) {
                     return false;
                 }

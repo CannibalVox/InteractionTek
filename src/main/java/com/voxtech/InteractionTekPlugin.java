@@ -57,6 +57,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         ModifyItemInteraction.ItemModification.CODEC.register("ChangeItem", ChangeItemModification.class, ChangeItemModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("RelocateItem", RelocateItemModification.class, RelocateItemModification.CODEC);
         ModifyItemInteraction.ItemModification.CODEC.register("Group", GroupModification.class, GroupModification.CODEC);
+        //ModifyItemInteraction.ItemModification.CODEC.register("AlwaysFail", AlwaysFailModification.class, AlwaysFailModification.CODEC);
     }
 
     @Override
@@ -68,6 +69,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         ModifyItemInteraction.ItemModification.CODEC.remove(ChangeItemModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(RelocateItemModification.class);
         ModifyItemInteraction.ItemModification.CODEC.remove(GroupModification.class);
+        //ModifyItemInteraction.ItemModification.CODEC.remove(AlwaysFailModification.class);
 
         SlotMatcher.Slot.CODEC.remove(IndexedSlotMatcher.class);
         SlotMatcher.Slot.CODEC.remove(ActiveHotbarMatcher.class);

@@ -6,6 +6,7 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -17,6 +18,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.item.matchers.SlotMatcher;
+import com.voxtech.transactions.TransactionState;
+import com.voxtech.transactions.rollback.ItemSlotRollback;
+import com.voxtech.transactions.rollback.ItemTargetRollback;
 
 import javax.annotation.Nonnull;
 
@@ -60,7 +64,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
     private boolean flexibleQuantity;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         ItemContainer toContainer = inventory.getSectionById(inventorySectionId);
         if (toContainer == null) {
             return false;
@@ -73,7 +77,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
             default -> -1;
         };
 
-        if (activeSlot >= 0 && attemptSlot(ref, buffer, context, targetContainer, toContainer, targetSlot, activeSlot, targetItem)) {
+        if (activeSlot >= 0 && attemptSlot(ref, buffer, transaction, context, targetContainer, toContainer, targetSlot, activeSlot, targetItem)) {
             return true;
         }
 
@@ -82,7 +86,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
                 continue;
             }
 
-            if (attemptSlot(ref, buffer, context, targetContainer, toContainer, targetSlot, i, targetItem)) {
+            if (attemptSlot(ref, buffer, transaction, context, targetContainer, toContainer, targetSlot, i, targetItem)) {
                 return true;
             }
         }
@@ -90,7 +94,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
         return false;
     }
 
-    private boolean attemptSlot(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer fromContainer, ItemContainer toContainer, short fromSlot, short toSlot, ItemStack targetItem) {
+    private boolean attemptSlot(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer fromContainer, ItemContainer toContainer, short fromSlot, short toSlot, ItemStack targetItem) {
         // Is this a valid place to send the item?
         if (slotMatcher != null && !slotMatcher.test(ref, buffer, context, toContainer, toSlot, targetItem)) {
             return false;
@@ -100,14 +104,25 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
             return false;
         }
 
-        // We can add so let's give it a shot
-        MoveTransaction<SlotTransaction> transaction = fromContainer.moveItemStackFromSlotToSlot(fromSlot, targetItem.getQuantity(),toContainer, toSlot);
+        ItemTargetHelper.TargetItemData oldTarget = ItemTargetHelper.getTargetItem(context);
 
-        if (transaction.succeeded() && !skipRetarget) {
-            // Change the current target
-            ItemTargetHelper.putTargetItem(context, new ItemTargetHelper.TargetItemData(toContainer, toSlot, transaction.getAddTransaction().getSlotAfter()));
+        // We can add so let's give it a shot
+        MoveTransaction<SlotTransaction> itemTransaction = fromContainer.moveItemStackFromSlotToSlot(fromSlot, targetItem.getQuantity(),toContainer, toSlot);
+
+        if (!itemTransaction.succeeded()) {
+            return false;
         }
 
-        return transaction.succeeded();
+        if (!skipRetarget) {
+            // Change the current target
+            ItemTargetHelper.putTargetItem(context, new ItemTargetHelper.TargetItemData(toContainer, toSlot, itemTransaction.getAddTransaction().getSlotAfter()));
+
+            transaction.queueRollback(new ItemTargetRollback(oldTarget));
+        }
+
+        transaction.queueRollback(new ItemSlotRollback(fromContainer, itemTransaction.getRemoveTransaction()));
+        transaction.queueRollback(new ItemSlotRollback(toContainer, itemTransaction.getAddTransaction()));
+
+        return true;
     }
 }

@@ -26,6 +26,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Sim
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
+import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,10 +54,16 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
             object -> object.requiredGameMode)
             .documentation("If the User entity is a player and they are not in this game mode, this interaction will do nothing but succeed. This setting is ignored for non-players.")
             .add()
+        .append(new KeyedCodec<>("RollbackOnFailure", Codec.BOOLEAN),
+            (object, rollbackOnFailure) -> object.rollbackOnFailure = rollbackOnFailure,
+            object -> object.rollbackOnFailure)
+            .documentation("If true, all changes made by modifications will be reversed before marking this interaction as failed in the event that a modification fails.")
+            .add()
         .build();
 
     private ItemModification[] itemModifications;
     private boolean continueOnFailure;
+    private boolean rollbackOnFailure;
     private GameMode requiredGameMode;
 
     @Override
@@ -89,8 +96,10 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
             return;
         }
 
+        TransactionState transaction = new TransactionState();
+
         for (ItemModification modification : itemModifications) {
-            boolean success = modification.modifyItemStack(world, context.getEntity(), buffer, context, inventory, targetContainer, (short)targetSlot, targetItemStack);
+            boolean success = modification.modifyItemStack(world, context.getEntity(), buffer, transaction, context, inventory, targetContainer, (short)targetSlot, targetItemStack);
 
             ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);
             targetContainer = refreshed.getContainer();
@@ -106,7 +115,12 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
             }
         }
 
-        ItemTargetHelper.replaceTargetItem(context, targetItemStack);
+        if (rollbackOnFailure && context.getState().state == InteractionState.Failed) {
+            transaction.executeRollback(ref, buffer, context);
+            ItemTargetHelper.refreshTargetItem(context);
+        } else {
+            transaction.executePostCommit(ref, buffer);
+        }
     }
 
     @Override
@@ -131,17 +145,17 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
 
         private boolean failEmptyItem;
 
-        public boolean modifyItemStack(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+        public boolean modifyItemStack(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
             if (targetItem == null && failEmptyItem) {
                 return false;
             } else if (targetItem == null && !canOperateOnEmpty()) {
                 return true;
             }
 
-            return modify0(world, ref, buffer, context, inventory, targetContainer, targetSlot, targetItem);
+            return modify0(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem);
         }
 
-        public abstract boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem);
+        public abstract boolean modify0(World world, Ref<EntityStore> ref,  CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem);
 
         public boolean canOperateOnEmpty() {
             return false;

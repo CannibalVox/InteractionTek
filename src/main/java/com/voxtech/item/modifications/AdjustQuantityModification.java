@@ -15,6 +15,10 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.transactions.TransactionState;
+import com.voxtech.transactions.rollback.ItemSlotRollback;
+import com.voxtech.transactions.rollback.ItemStackRollback;
+import com.voxtech.transactions.rollback.SpawnEntityRollback;
 
 import javax.annotation.Nonnull;
 
@@ -46,13 +50,16 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
     private boolean dontSpillOverExtra;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         if (delta > 0) {
-            ItemStackSlotTransaction transaction = targetContainer.addItemStackToSlot(targetSlot, targetItem.withQuantity(delta));
-            ItemStack remainder = transaction.getRemainder();
+            ItemStackSlotTransaction itemTransaction = targetContainer.addItemStackToSlot(targetSlot, targetItem.withQuantity(delta));
+            transaction.queueRollback(new ItemSlotRollback(targetContainer, itemTransaction));
+            ItemStack remainder = itemTransaction.getRemainder();
 
             if (!ItemStack.isEmpty(remainder) && !dontSpillOverExtra) {
-                ItemStackTransaction stackTransaction = inventory.getCombinedHotbarFirst().addItemStack(remainder);
+                ItemContainer combined = inventory.getCombinedHotbarFirst();
+                ItemStackTransaction stackTransaction = combined.addItemStack(remainder);
+                transaction.queueRollback(new ItemStackRollback(combined, stackTransaction));
                 remainder = stackTransaction.getRemainder();
             }
 
@@ -61,7 +68,10 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
                     return false;
                 }
 
-                ItemUtils.dropItem(ref, remainder, buffer);
+                Ref<EntityStore> spawned = ItemUtils.dropItem(ref, remainder, buffer);
+                if (spawned != null) {
+                    transaction.queueRollback(new SpawnEntityRollback(spawned));
+                }
             }
 
             return true;
@@ -69,7 +79,11 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
 
         int toRemove = -delta;
 
-        ItemStackSlotTransaction transaction = targetContainer.removeItemStackFromSlot(targetSlot, targetItem, toRemove);
-        return transaction.succeeded();
+        ItemStackSlotTransaction itemTransaction = targetContainer.removeItemStackFromSlot(targetSlot, targetItem, toRemove);
+        if (!itemTransaction.succeeded()) {
+            return false;
+        }
+        transaction.queueRollback(new ItemSlotRollback(targetContainer, itemTransaction));
+        return true;
     }
 }

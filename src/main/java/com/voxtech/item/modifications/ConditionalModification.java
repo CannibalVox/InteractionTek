@@ -17,6 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 
@@ -52,12 +53,12 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
     private ModifyItemInteraction.ItemModification modification;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         if (!targetItemMatches(ref, buffer, context, targetContainer, targetSlot, targetItem)) {
             return true;
         }
 
-        return modification.modifyItemStack(world, ref, buffer, context, inventory, targetContainer, targetSlot, targetItem);
+        return modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem);
     }
 
     private boolean targetItemMatches(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {

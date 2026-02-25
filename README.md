@@ -103,6 +103,7 @@ This interaction applies a series of modifications to the current item target.
 | ItemModifications | `Array`<br />(Element Type: `ItemModification`) | **Yes** | A list of modifications that will be applied to the target item one at a time. |
 | ContinueOnFailure | `Boolean`<br />(Default: false) | **No** | If true, this interaction will not stop executing modifications when one fails. It will attempt all modifications once before failing. |
 | RequiredGameMode | `GameMode` | **No** | If the User entity is a player and this field is provided, the player will need to be in the specified game mode for the modificatoins to execute. Otherwise, the interaction will do nothing and be marked successful. |
+| RollbackOnFailure | `Boolean`<br />(Default: false) | **No** | If true, if any modification fails, all changes made by this interaction will be reversed before it is marked as failed. |
 
 **GameMode Values**
 
