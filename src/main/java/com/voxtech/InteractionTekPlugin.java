@@ -23,6 +23,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.register("TekModifyItem", ModifyItemInteraction.class, ModifyItemInteraction.CODEC);
         Interaction.CODEC.register("TekRandomBranch", RandomBranchInteraction.class, RandomBranchInteraction.CODEC);
         Interaction.CODEC.register("TekInterruptSelf", InterruptSelfInteraction.class, InterruptSelfInteraction.CODEC);
+        Interaction.CODEC.register("TekRunCommand", RunCommandInteraction.class, RunCommandInteraction.CODEC);
 
         ItemConditionInteraction.ItemMatcher.CODEC.register("Durability", DurabilityMatcher.class, DurabilityMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("EmptySlot", EmptySlotMatcher.class, EmptySlotMatcher.CODEC);
@@ -102,5 +103,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.remove(ModifyItemInteraction.class);
         Interaction.CODEC.remove(RandomBranchInteraction.class);
         Interaction.CODEC.remove(InterruptSelfInteraction.class);
+        Interaction.CODEC.remove(RunCommandInteraction.class);
     }
 }

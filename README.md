@@ -153,3 +153,26 @@ This interaction will randomly select what interaction to run next from a list
 | Interaction | `Asset`<br />(Asset Type: `Interaction`) | **Yes** | The interaction to run if this branch is selected.                            |
 | Weight | `Integer`<br />(Default: 1) | **No** | The weight assigned to this branch.  Higher means more likely to be selected. |
 
+
+## Utility
+
+Connections to other modding systems.
+
+### TekRunCommand
+
+This interaction executes a command as one of the interaction's entities, if possible.  By
+  default, players are the only entity type that can send commands, but if you have a mod that
+  adds other capabilities, this interaction will be compatible.
+
+This interaction will fail if the specified entity cannot run commands but will otherwise succeed,
+  even if the command fails or if the syntax is invalid.
+
+| Field Name | Type | Required? | Notes                                                                         |
+|------------|------|-----------|-------------------------------------------------------------------------------|
+| RunAs | `InteractionTarget`<br />(Default: User) | **No** | The entity to run the command as. |
+| CommandText | `String` | **Yes** | The command text to run. Exclude the leading slash. |
+
+**InteractionTarget Values**
+- `User`
+- `Owner`
+- `Target`
