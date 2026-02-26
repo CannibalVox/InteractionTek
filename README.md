@@ -176,3 +176,58 @@ This interaction will fail if the specified entity cannot run commands but will 
 - `User`
 - `Owner`
 - `Target`
+
+### TekRunProxiedCommand
+
+This interaction will execute a command as one of the interaction's entities if possible, but proxied through
+  a non-player structure with enhanced permissions.  As a result, commands that require a player to function will
+  require use of the `--player` flag. However, this command also allows use of @-variables, like minecraft command
+  blocks.  Any @ symbol that isn't immediately followed by a valid variable name will be displayed normally.  Double
+  @ symbols will always be displayed as a single @ symbol and not perform variable processing.
+
+Examples:
+
+`CommandText`: say Hello, @player!
+`Output`: Hello, Canvoxtek!
+
+`CommandText`: say @_@
+`Output`: @_@
+
+`CommandText`: say No, @secrets is not a variable.
+`Output`: No, @secrets is not a variable.
+
+`CommandText`: say To send the player's display name, use @@player!
+`Output`: To send the player's display name, use @player!
+
+`CommandText`: say @@_@@
+`Output`: @_@
+
+The following @-variables are currently implemented:
+
+| Variable | Notes                                                                                                                                     |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| @player  | The player display name of the specified entity. If the specified entity is not a player, this interaction will fail.                     |
+| @self    | The UUID of the User entity. If the specified entity does not have a UUID, this interaction will fail.                                    |
+| @selfX   | The block X position of the User entity. If the specified entity does not have a position, this interaction will fail.                    |
+| @selfY   | The block Y position of the User entity. If the specified entity does not have a position, this interaction will fail.                    |
+| @selfZ   | The block Z position of the User entity. If the specified entity does not have a position, this interaction will fail.                    |
+| @blockX  | The X position of the target block. If there is no target block, this interaction will fail.                                              |
+| @blockY  | The Y position of the target block. If there is no target block, this interaction will fail.                                              |
+| @blockZ  | The Z position of the target block. If there is no target block, this interaction will fail.                                              |
+| @targetX | The block X position of the Target entity. If there is no target entity or the target entity has no position, this interaction will fail. |
+| @targetY | The block Y position of the Target entity. If there is no target entity or the target entity has no position, this interaction will fail. |
+| @targetZ | The block Z position of the Target entity. If there is no target entity or the target entity has no position, this interaction will fail. |
+
+This interaction will fail if the specified entity cannot run commands with the provided permissions or if an invalid variable is
+  used, but will otherwise succeed, even if the command fails or if the syntax is invalid.
+
+| Field Name | Type | Required? | Notes                                                                         |
+|------------|------|-----------|-------------------------------------------------------------------------------|
+| RunAs | `InteractionTarget`<br />(Default: User) | **No** | The entity to run the command as. |
+| CommandText | `String` | **Yes** | The command text to run. Exclude the leading slash. |
+| WithPermissions | `Set`<br />(Element Type: `String`) | **No** | **If this field is not provided, the command will be run with complete, unlimited permissions.**  If provided, this set of permissions will be added to the specified entity's permissions within the scope of this command. |
+
+**InteractionTarget Values**
+- `User`
+- `Owner`
+- `Target`

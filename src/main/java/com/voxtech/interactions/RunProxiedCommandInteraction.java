@@ -20,36 +20,46 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.util.InteractionTarget;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.commands.Token;
+import com.voxtech.helpers.CommandTokenHelper;
+import com.voxtech.helpers.ExtraPermissionWrapper;
 import com.voxtech.helpers.OpPermissionWrapper;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class RunCommandInteraction extends SimpleInteraction {
+public class RunProxiedCommandInteraction extends SimpleInteraction {
 
     @Nonnull
-    public static final BuilderCodec<RunCommandInteraction> CODEC = BuilderCodec
-        .builder(RunCommandInteraction.class, RunCommandInteraction::new, SimpleInteraction.CODEC)
-        .documentation("Runs specified command text as the specified entity. Will fail if the entity cannot run commands (mostly, only players can). Otherwise, this interaction will succeed even if the command fails to run.")
-        .append(new KeyedCodec<>("RunAs", InteractionTarget.CODEC),
-            (object, runAs) -> object.runAs = runAs,
-            object -> object.runAs)
+    public static final BuilderCodec<RunProxiedCommandInteraction> CODEC = BuilderCodec
+        .builder(RunProxiedCommandInteraction.class, RunProxiedCommandInteraction::new, SimpleInteraction.CODEC)
+        .documentation("Runs specified command text as the specified entity, proxied through a . Will fail if the entity cannot run commands (mostly, only players can). Otherwise, this interaction will succeed even if the command fails to run.")
+        .append(new KeyedCodec<>("RunFor", InteractionTarget.CODEC),
+            (object, runAs) -> object.runFor = runAs,
+            object -> object.runFor)
             .documentation("The entity to run the command as.")
             .add()
         .append(new KeyedCodec<>("CommandText", Codec.STRING),
             (object, commandText) -> object.commandText = commandText,
             object -> object.commandText)
-            .documentation("The text of the command to execute.  Do not include the leading slash.")
+            .documentation("The text of the command to execute.  Do not include the leading slash. The commands will not consider themselves to have run as a player, so the --player argument will sometimes be necessary.  See the readme for @-variables permitted in this command text.")
             .addValidator(Validators.nonEmptyString())
             .addValidator(Validators.nonNull())
+            .add()
+        .append(new KeyedCodec<>("WithPermissions", new SetCodec<>(Codec.STRING, HashSet<String>::new, true)),
+            (object, withPermissions) -> object.withPermissions = withPermissions,
+            object -> object.withPermissions)
+            .documentation("A set of permissions to add to the user for the scope of this command. When this field is used, the command runner will no longer be considered a player, which may prevent some commands from running.")
             .add()
         .build();
 
 
-    private InteractionTarget runAs = InteractionTarget.USER;
+    private InteractionTarget runFor = InteractionTarget.USER;
     private String commandText;
+    private Set<String> withPermissions;
 
     private static final MetaKey<CompletableFuture<Void>> COMMAND_FUTURE = Interaction.META_REGISTRY.registerMetaObject(i -> null);
 
@@ -58,7 +68,7 @@ public class RunCommandInteraction extends SimpleInteraction {
         CompletableFuture<Void> future;
 
         if (firstRun) {
-            Ref<EntityStore> runEntity = runAs.getEntity(context, context.getEntity());
+            Ref<EntityStore> runEntity = runFor.getEntity(context, context.getEntity());
             CommandBuffer<EntityStore> buffer = context.getCommandBuffer();
 
             assert buffer != null;
@@ -70,7 +80,27 @@ public class RunCommandInteraction extends SimpleInteraction {
                 return;
             }
 
-            future = CommandManager.get().handleCommand(sender, commandText);
+            List<Token> tokens = CommandTokenHelper.tokenizeCommand(commandText);
+            StringBuilder builder = new StringBuilder();
+
+            for (Token token : tokens) {
+                String value = token.value(runEntity, buffer, context);
+                if (value == null) {
+                    context.getState().state = InteractionState.Failed;
+                    super.tick0(firstRun, time, type, context, cooldownHandler);
+                    return;
+                }
+
+                builder.append(value);
+            }
+
+            if (withPermissions == null || withPermissions.isEmpty()) {
+                sender = new OpPermissionWrapper(sender);
+            } else {
+                sender = new ExtraPermissionWrapper(sender, withPermissions);
+            }
+
+            future = CommandManager.get().handleCommand(sender, builder.toString());
             context.getInstanceStore().putMetaObject(COMMAND_FUTURE, future);
         } else {
             future = context.getInstanceStore().getMetaObject(COMMAND_FUTURE);
