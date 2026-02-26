@@ -167,6 +167,8 @@ This interaction executes a command as one of the interaction's entities, if pos
 This interaction will fail if the specified entity cannot run commands but will otherwise succeed,
   even if the command fails or if the syntax is invalid.
 
+**TekRunCommand Fields**
+
 | Field Name | Type | Required? | Notes                                                                         |
 |------------|------|-----------|-------------------------------------------------------------------------------|
 | RunAs | `InteractionTarget`<br />(Default: User) | **No** | The entity to run the command as. |
@@ -220,6 +222,8 @@ The following @-variables are currently implemented:
 
 This interaction will fail if the specified entity cannot run commands with the provided permissions or if an invalid variable is
   used, but will otherwise succeed, even if the command fails or if the syntax is invalid.
+
+**TekRunProxiedCommand Fields**
 
 | Field Name | Type | Required? | Notes                                                                         |
 |------------|------|-----------|-------------------------------------------------------------------------------|
