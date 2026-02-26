@@ -180,8 +180,8 @@ This interaction will fail if the specified entity cannot run commands but will 
 ### TekRunProxiedCommand
 
 This interaction will execute a command as one of the interaction's entities if possible, but proxied through
-  a non-player structure with enhanced permissions.  As a result, commands that require a player to function will
-  require use of the `--player` flag. However, this command also allows use of @-variables, like minecraft command
+  a non-player structure with enhanced permissions.  As a result, commands that require a player in order to function will
+  require use of the `--player` flag. However, this command also allows use of @-variables, a bit like minecraft command
   blocks.  Any @ symbol that isn't immediately followed by a valid variable name will be displayed normally.  Double
   @ symbols will always be displayed as a single @ symbol and not perform variable processing.
 
@@ -199,8 +199,8 @@ Examples:
 `CommandText`: say To send the player's display name, use @@player!
 `Output`: To send the player's display name, use @player!
 
-`CommandText`: say @@_@@
-`Output`: @_@
+`CommandText`: say @@@@ @@_@@ @@@@
+`Output`: @@ @_@ @@
 
 The following @-variables are currently implemented:
 
