@@ -189,20 +189,20 @@ This interaction will execute a command as one of the interaction's entities if 
 
 Examples:
 
-`CommandText`: say Hello, @player!
+`CommandText`: say Hello, @player!<br />
 `Output`: Hello, Canvoxtek!
 
-`CommandText`: say @_@
-`Output`: @_@
+`CommandText`: say @\_@<br />
+`Output`: @\_@
 
-`CommandText`: say No, @secrets is not a variable.
+`CommandText`: say No, @secrets is not a variable.<br />
 `Output`: No, @secrets is not a variable.
 
-`CommandText`: say To send the player's display name, use @@player!
+`CommandText`: say To send the player's display name, use @@player!<br />
 `Output`: To send the player's display name, use @player!
 
-`CommandText`: say @@@@ @@_@@ @@@@
-`Output`: @@ @_@ @@
+`CommandText`: say @@@@ @@\_@@ @@@@<br />
+`Output`: @@ @\_@ @@
 
 The following @-variables are currently implemented:
 
