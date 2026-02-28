@@ -12,6 +12,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.WaitForDataFrom;
 import com.hypixel.hytale.server.core.entity.Entity;
 import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
@@ -65,6 +66,18 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
     private boolean continueOnFailure;
     private boolean rollbackOnFailure;
     private GameMode requiredGameMode;
+
+    @Nonnull
+    @Override
+    public WaitForDataFrom getWaitForDataFrom() {
+        return WaitForDataFrom.Server;
+    }
+
+    @Override
+    public boolean needsRemoteSync() {
+        return true;
+    }
+
 
     @Override
     protected void interactWithItem(@Nonnull World world, @Nonnull CommandBuffer<EntityStore> buffer, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack, @Nonnull CooldownHandler cooldownHandler) {

@@ -5,6 +5,7 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.WaitForDataFrom;
 import com.hypixel.hytale.server.core.entity.InteractionChain;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
@@ -23,6 +24,17 @@ public class InterruptSelfInteraction extends SimpleInstantInteraction {
         .builder(InterruptSelfInteraction.class, InterruptSelfInteraction::new, SimpleInstantInteraction.CODEC)
         .documentation("Cancels the currently-running interaction chain.")
         .build();
+
+    @Nonnull
+    @Override
+    public WaitForDataFrom getWaitForDataFrom() {
+        return WaitForDataFrom.Server;
+    }
+
+    @Override
+    public boolean needsRemoteSync() {
+        return true;
+    }
 
     @Override
     protected void firstRun(@NonNullDecl InteractionType interactionType, @NonNullDecl InteractionContext interactionContext, @NonNullDecl CooldownHandler cooldownHandler) {

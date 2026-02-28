@@ -9,6 +9,7 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.WaitForDataFrom;
 import com.hypixel.hytale.server.core.command.system.CommandManager;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.entity.Entity;
@@ -52,6 +53,17 @@ public class RunCommandInteraction extends SimpleInteraction {
     private String commandText;
 
     private static final MetaKey<CompletableFuture<Void>> COMMAND_FUTURE = Interaction.META_REGISTRY.registerMetaObject(i -> null);
+
+    @Nonnull
+    @Override
+    public WaitForDataFrom getWaitForDataFrom() {
+        return WaitForDataFrom.Server;
+    }
+
+    @Override
+    public boolean needsRemoteSync() {
+        return true;
+    }
 
     @Override
     protected void tick0(boolean firstRun, float time, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nonnull CooldownHandler cooldownHandler) {
