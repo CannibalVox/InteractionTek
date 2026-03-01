@@ -153,6 +153,35 @@ This interaction will randomly select what interaction to run next from a list
 | Interaction | `Asset`<br />(Asset Type: `Interaction`) | **Yes** | The interaction to run if this branch is selected.                            |
 | Weight | `Integer`<br />(Default: 1) | **No** | The weight assigned to this branch.  Higher means more likely to be selected. |
 
+### TekTransaction
+
+This interaction will execute several transaction steps.  If any fail, all actions 
+  taken so far will be rolled back.  This interaction is ideal for paying several
+  costs for an RPG-style ability.  You can trigger multiple cooldowns, pay stat
+  costs, and consume items from the entity's inventory and if any cost cannot be
+  paid, none will be triggered.
+
+**TekTransaction Fields**
+
+| Field Name | Type | Required? | Notes                                                                         |
+|------------|------|-----------|-------------------------------------------------------------------------------|
+| Steps | `Array`<br />(Element Type: `TransactionStep`) | **Yes** | The transaction steps to execute. |
+
+**TransactionStep Fields**
+
+| Field Name | Type | Required? | Notes                                                                         |
+|------------|------|-----------|-------------------------------------------------------------------------------|
+| Failed | `Asset`<br />(Asset Type: `Interaction`) | **No** | If this transaction step failed, this interaction will be executed next, if provided.  Otherwise, the TekTransaction's `Failed` interaction will be executed next. |
+
+**Available TransactionStep Types**
+
+For more information, examine the types in the asset editor.
+
+- `ChangeStats` - Apply a delta to one or more entity stats and potentially fail if the stat is fully consumed.
+- `ConsumeItems` - Remove a quantity of items that match a set of ItemMatchers from the entity inventory. Fail if the full quantity cannot be consumed.
+- `ModifyItem` - Find the first item slot that matches a set of ItemMatchers in the entity inventory and apply a set of ItemModifications.  This step will fail if no matching slot can be found or an ItemModification fails.
+- `ProvideItems` - Add a quantity of specified items to an entity inventory.  Allows the possibility of failing if all items cannot fit.
+- `TriggerCooldown` - Trigger a cooldown on the User entity with the specified properties. Fails if the cooldown is already active. 
 
 ## Utility
 

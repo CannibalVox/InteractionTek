@@ -33,7 +33,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         TransactionInteraction.TransactionStep.CODEC.register("ModifyItem", ModifyItemStep.class, ModifyItemStep.CODEC);
         TransactionInteraction.TransactionStep.CODEC.register("ChangeStats", ChangeStatsStep.class, ChangeStatsStep.CODEC);
         TransactionInteraction.TransactionStep.CODEC.register("TriggerCooldown", TriggerCooldownStep.class, TriggerCooldownStep.CODEC);
-        TransactionInteraction.TransactionStep.CODEC.register("AlwaysFail", AlwaysFailStep.class, AlwaysFailStep.CODEC);
+        //TransactionInteraction.TransactionStep.CODEC.register("AlwaysFail", AlwaysFailStep.class, AlwaysFailStep.CODEC);
 
         ItemConditionInteraction.ItemMatcher.CODEC.register("Durability", DurabilityMatcher.class, DurabilityMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("EmptySlot", EmptySlotMatcher.class, EmptySlotMatcher.CODEC);
@@ -113,7 +113,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         TransactionInteraction.TransactionStep.CODEC.remove(ModifyItemStep.class);
         TransactionInteraction.TransactionStep.CODEC.remove(ChangeStatsStep.class);
         TransactionInteraction.TransactionStep.CODEC.remove(TriggerCooldownStep.class);
-        TransactionInteraction.TransactionStep.CODEC.remove(AlwaysFailStep.class);
+        //TransactionInteraction.TransactionStep.CODEC.remove(AlwaysFailStep.class);
 
         Interaction.CODEC.remove(ItemConditionInteraction.class);
         Interaction.CODEC.remove(TargetFirstItemInteraction.class);

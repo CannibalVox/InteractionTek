@@ -53,7 +53,7 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
         .append(new KeyedCodec<>("FailOnExhaust", Codec.BOOLEAN),
             (object, failOnExhaust) -> object.failOnExhaust = failOnExhaust,
             object -> object.failOnExhaust)
-            .documentation("If true, this transaction step will fail if the change would cause a stat to become exhausted (reach minimum)")
+            .documentation("Defaults to true. If true, this transaction step will fail if the change would cause a stat to become exhausted (reach minimum)")
             .add()
         .append(new KeyedCodec<>("FailOnAlreadyExhausted", Codec.BOOLEAN),
             (object, failOnAlreadyExhausted) -> object.failOnAlreadyExhausted = failOnAlreadyExhausted,
@@ -63,7 +63,7 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
         .append(new KeyedCodec<>("ExhaustAtZero", Codec.BOOLEAN),
             (object, exhaustAtZero) -> object.exhaustAtZero = exhaustAtZero,
             object -> object.exhaustAtZero)
-            .documentation("If true, stats will count as exhausted if they are at are below zero, even if they are not at minimum")
+            .documentation("Defaults to true. If true, stats will count as exhausted if they are at are below zero, even if they are not at minimum")
             .add()
         .append(new KeyedCodec<>("FailOnOvercap", Codec.BOOLEAN),
             (object, failOnOvercap) -> object.failOnOvercap = failOnOvercap,
@@ -86,7 +86,7 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
     private InteractionTarget interactionTarget = InteractionTarget.USER;
     private boolean failOnOvercap;
     private boolean failOnExhaust = true;
-    private boolean failOnAlreadyExhausted = true;
+    private boolean failOnAlreadyExhausted;
     private boolean failOnAlreadyCapped;
     private boolean exhaustAtZero = true;
 
@@ -103,7 +103,7 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
         }
 
         for (Int2FloatMap.Entry entry : entityStats.int2FloatEntrySet()) {
-            int statIndex = entry.getIntKey();
+                int statIndex = entry.getIntKey();
             float delta = entry.getFloatValue();
 
             EntityStatValue stat = stats.get(statIndex);
@@ -119,7 +119,7 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
             float amount = oldAmount + delta;
 
             boolean wasExhausted = (oldAmount <= 0 && exhaustAtZero) || oldAmount <= stat.getMin();
-            boolean isExhausted = (amount <= 0 && exhaustAtZero) || amount <= stat.getMin();
+            boolean isExhausted = (amount <= 0 && exhaustAtZero) || amount < stat.getMin();
 
             if (failOnAlreadyExhausted && delta < 0 && wasExhausted) {
                 return false;
@@ -129,18 +129,18 @@ public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
                 return false;
             }
 
-            if (failOnOvercap && delta > 0 && (amount > stat.getMin())) {
+            if (failOnOvercap && delta > 0 && (amount > stat.getMax())) {
                 return false;
             }
 
-            if (failOnAlreadyCapped && delta >0 && oldAmount > stat.getMax()) {
+            if (failOnAlreadyCapped && delta >0 && oldAmount >= stat.getMax()) {
                 return false;
             }
 
-            stats.addStatValue(EntityStatMap.Predictable.SELF, statIndex, amount);
+            stats.addStatValue(EntityStatMap.Predictable.SELF, statIndex, delta);
             transaction.queueRollback(new StatRollback(targetRef, statIndex, oldAmount));
         }
 
-        return false;
+        return true;
     }
 }

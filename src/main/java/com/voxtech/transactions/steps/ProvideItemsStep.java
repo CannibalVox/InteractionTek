@@ -124,6 +124,6 @@ public class ProvideItemsStep extends TransactionInteraction.TransactionStep {
         Ref<EntityStore> dropEntity = ItemUtils.dropItem(ref, remainder, commandBuffer);
         transaction.queueRollback(new SpawnEntityRollback(dropEntity));
 
-        return false;
+        return true;
     }
 }
