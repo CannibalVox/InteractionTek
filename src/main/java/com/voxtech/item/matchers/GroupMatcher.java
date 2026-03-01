@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.protocol.ItemMatchType;
 
@@ -39,18 +40,6 @@ public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        for (ItemConditionInteraction.ItemMatcher matcher : itemMatchers) {
-            boolean result = matcher.test(user, commandBuffer, context, targetContainer, targetSlot, targetItem);
-
-            if (result && itemMatchType == ItemMatchType.Any) {
-                return true;
-            }
-
-            if (!result && itemMatchType == ItemMatchType.All) {
-                return false;
-            }
-        }
-
-        return (itemMatchType != ItemMatchType.Any);
+        return InventoryHelper.executeMatchers(itemMatchers, itemMatchType, user, commandBuffer, context, targetContainer, (short)targetSlot, targetItem);
     }
 }

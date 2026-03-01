@@ -126,7 +126,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         // changed
         if (playerComponent != null && isBroken && !wasBroken && (!transformed || notifyOnBreak)) {
             String message = this.notifyOnBreakMessage != null ? this.notifyOnBreakMessage : "server.general.repair.itemBroken";
-            transaction.queuePostCommit(new BreakItemPostCommit(targetItem.getItem(), message));
+            transaction.queuePostCommit(new BreakItemPostCommit(ref, targetItem.getItem(), message));
         }
 
         return true;

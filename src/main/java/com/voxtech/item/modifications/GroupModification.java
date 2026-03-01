@@ -14,6 +14,7 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.transactions.TransactionState;
@@ -45,22 +46,6 @@ public class GroupModification extends ModifyItemInteraction.ItemModification {
 
     @Override
     public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-        boolean retVal = true;
-        for (ModifyItemInteraction.ItemModification modification : itemModifications) {
-            if (!modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem)) {
-                if (!continueOnFailure) {
-                    return false;
-                }
-
-                retVal = false;
-            }
-
-            ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);
-            targetContainer = refreshed.getContainer();
-            targetSlot = refreshed.getSlot();
-            targetItem = refreshed.getItemStack();
-        }
-
-        return retVal;
+        return InventoryHelper.executeModifications(itemModifications, world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem, continueOnFailure);
     }
 }

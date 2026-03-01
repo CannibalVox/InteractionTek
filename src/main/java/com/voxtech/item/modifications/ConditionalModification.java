@@ -14,8 +14,10 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.item.matchers.InventoryMatcher;
 import com.voxtech.protocol.ItemMatchType;
 import com.voxtech.transactions.TransactionState;
 
@@ -54,25 +56,10 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
 
     @Override
     public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-        if (!targetItemMatches(ref, buffer, context, targetContainer, targetSlot, targetItem)) {
+        if (!InventoryHelper.executeMatchers(itemMatchers, itemMatchType, ref, buffer, context, targetContainer, targetSlot, targetItem)) {
             return true;
         }
 
         return modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem);
-    }
-
-    private boolean targetItemMatches(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-        for (ItemConditionInteraction.ItemMatcher matcher : itemMatchers) {
-            boolean success = matcher.test(ref, buffer, context, targetContainer, targetSlot, targetItem);
-            if (success && itemMatchType == ItemMatchType.Any) {
-                return true;
-            }
-
-            if (!success && itemMatchType == ItemMatchType.All) {
-                return false;
-            }
-        }
-
-        return itemMatchType != ItemMatchType.Any;
     }
 }

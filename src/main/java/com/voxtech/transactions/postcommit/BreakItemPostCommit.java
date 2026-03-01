@@ -6,22 +6,26 @@ import com.hypixel.hytale.protocol.SoundCategory;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 public class BreakItemPostCommit implements PostCommitEntry {
-    public BreakItemPostCommit(Item brokenItem, String message) {
+    public BreakItemPostCommit(Ref<EntityStore> ref, Item brokenItem, String message) {
+        this.ref = ref;
         this.brokenItem = brokenItem;
         this.message = message;
     }
 
+    private final Ref<EntityStore> ref;
     private final Item brokenItem;
     private final String message;
 
     @Override
-    public void postCommit(Ref<EntityStore> ref, CommandBuffer<EntityStore> commandBuffer) {
+    public void postCommit(CommandBuffer<EntityStore> commandBuffer, InteractionContext context, CooldownHandler cooldown) {
         Player playerComponent = commandBuffer.getComponent(ref, Player.getComponentType());
         if (playerComponent == null) {
             return;

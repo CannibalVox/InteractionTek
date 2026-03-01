@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 public class ItemStackRollback implements RollbackEntry {
@@ -19,7 +20,7 @@ public class ItemStackRollback implements RollbackEntry {
     }
 
     @Override
-    public void rollback(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context) {
+    public void rollback(CommandBuffer<EntityStore> buffer, InteractionContext context, CooldownHandler cooldown) {
         if (!change.succeeded()) {
             return;
         }

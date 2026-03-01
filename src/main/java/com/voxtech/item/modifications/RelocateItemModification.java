@@ -15,6 +15,7 @@ import com.hypixel.hytale.server.core.inventory.transaction.MoveTransaction;
 import com.hypixel.hytale.server.core.inventory.transaction.SlotTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.item.matchers.SlotMatcher;
@@ -70,13 +71,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
             return false;
         }
 
-        short activeSlot = switch (inventorySectionId) {
-            case HOTBAR_SECTION_ID -> inventory.getActiveHotbarSlot();
-            case UTILITY_SECTION_ID -> inventory.getActiveUtilitySlot();
-            case TOOLS_SECTION_ID -> inventory.getActiveToolsSlot();
-            default -> -1;
-        };
-
+        short activeSlot = InventoryHelper.getActiveSlot(inventory, inventorySectionId);
         if (activeSlot >= 0 && attemptSlot(ref, buffer, transaction, context, targetContainer, toContainer, targetSlot, activeSlot, targetItem)) {
             return true;
         }

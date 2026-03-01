@@ -26,6 +26,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.transactions.TransactionState;
 
@@ -111,28 +112,15 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
 
         TransactionState transaction = new TransactionState();
 
-        for (ItemModification modification : itemModifications) {
-            boolean success = modification.modifyItemStack(world, context.getEntity(), buffer, transaction, context, inventory, targetContainer, (short)targetSlot, targetItemStack);
+        if (!InventoryHelper.executeModifications(itemModifications, world, context.getEntity(), buffer, transaction, context, inventory, targetContainer, (short)targetSlot, targetItemStack, continueOnFailure)) {
+            context.getState().state = InteractionState.Failed;
 
-            ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);
-            targetContainer = refreshed.getContainer();
-            targetSlot = refreshed.getSlot();
-            targetItemStack = refreshed.getItemStack();
-
-            if (!success) {
-                context.getState().state = InteractionState.Failed;
-
-                if (!continueOnFailure) {
-                    break;
-                }
+            if (rollbackOnFailure) {
+                transaction.executeRollback(buffer, context, cooldownHandler);
+                ItemTargetHelper.refreshTargetItem(context);
             }
-        }
-
-        if (rollbackOnFailure && context.getState().state == InteractionState.Failed) {
-            transaction.executeRollback(ref, buffer, context);
-            ItemTargetHelper.refreshTargetItem(context);
         } else {
-            transaction.executePostCommit(ref, buffer);
+            transaction.executePostCommit(buffer, context, cooldownHandler);
         }
     }
 

@@ -21,6 +21,7 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.protocol.ItemMatchType;
 
@@ -105,13 +106,7 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
                 continue;
             }
 
-            short activeSlot = switch (inventorySectionId) {
-                case HOTBAR_SECTION_ID -> inventory.getActiveHotbarSlot();
-                case UTILITY_SECTION_ID -> inventory.getActiveUtilitySlot();
-                case TOOLS_SECTION_ID -> inventory.getActiveToolsSlot();
-                default -> -1;
-            };
-
+            short activeSlot = InventoryHelper.getActiveSlot(inventory, inventorySectionId);
             if (activeSlot >= 0 && checkItem(user, buffer, context, container, activeSlot)) {
                 return;
             }
@@ -132,27 +127,12 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
 
     private boolean checkItem(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer container, short slot) {
         ItemStack contents = container.getItemStack(slot);
-        boolean matched = runMatchers(ref, buffer, context, container, slot, contents);
+        boolean matched = InventoryHelper.executeMatchers(itemMatchers, itemMatchType, ref, buffer, context, container, slot, contents);
 
         if (matched) {
             ItemTargetHelper.putTargetItem(context, new ItemTargetHelper.TargetItemData(container, slot, contents));
         }
 
         return matched;
-    }
-
-    private boolean runMatchers(Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, InteractionContext context, ItemContainer container, short slot, ItemStack contents) {
-        for (ItemConditionInteraction.ItemMatcher matcher : itemMatchers) {
-            boolean result = matcher.test(ref, buffer, context, container, slot, contents);
-            if (!result && itemMatchType == ItemMatchType.All) {
-                return false;
-            }
-
-            if (result && itemMatchType == ItemMatchType.Any) {
-                return true;
-            }
-        }
-
-        return itemMatchType != ItemMatchType.Any;
     }
 }

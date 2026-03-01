@@ -7,6 +7,7 @@ import com.voxtech.interactions.*;
 import com.voxtech.item.matchers.*;
 import com.voxtech.item.matchers.slot.*;
 import com.voxtech.item.modifications.*;
+import com.voxtech.transactions.steps.*;
 
 import javax.annotation.Nonnull;
 
@@ -25,6 +26,14 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.register("TekInterruptSelf", InterruptSelfInteraction.class, InterruptSelfInteraction.CODEC);
         Interaction.CODEC.register("TekRunCommand", RunCommandInteraction.class, RunCommandInteraction.CODEC);
         Interaction.CODEC.register("TekRunProxiedCommand", RunProxiedCommandInteraction.class, RunProxiedCommandInteraction.CODEC);
+        Interaction.CODEC.register("TekTransaction", TransactionInteraction.class, TransactionInteraction.CODEC);
+
+        TransactionInteraction.TransactionStep.CODEC.register("ConsumeItems", ConsumeItemsStep.class, ConsumeItemsStep.CODEC);
+        TransactionInteraction.TransactionStep.CODEC.register("ProvideItems", ProvideItemsStep.class, ProvideItemsStep.CODEC);
+        TransactionInteraction.TransactionStep.CODEC.register("ModifyItem", ModifyItemStep.class, ModifyItemStep.CODEC);
+        TransactionInteraction.TransactionStep.CODEC.register("ChangeStats", ChangeStatsStep.class, ChangeStatsStep.CODEC);
+        TransactionInteraction.TransactionStep.CODEC.register("TriggerCooldown", TriggerCooldownStep.class, TriggerCooldownStep.CODEC);
+        TransactionInteraction.TransactionStep.CODEC.register("AlwaysFail", AlwaysFailStep.class, AlwaysFailStep.CODEC);
 
         ItemConditionInteraction.ItemMatcher.CODEC.register("Durability", DurabilityMatcher.class, DurabilityMatcher.CODEC);
         ItemConditionInteraction.ItemMatcher.CODEC.register("EmptySlot", EmptySlotMatcher.class, EmptySlotMatcher.CODEC);
@@ -99,6 +108,13 @@ public class InteractionTekPlugin extends JavaPlugin {
         ItemConditionInteraction.ItemMatcher.CODEC.remove(InventoryMatcher.class);
         ItemConditionInteraction.ItemMatcher.CODEC.remove(SlotMatcher.class);
 
+        TransactionInteraction.TransactionStep.CODEC.remove(ConsumeItemsStep.class);
+        TransactionInteraction.TransactionStep.CODEC.remove(ConsumeItemsStep.class);
+        TransactionInteraction.TransactionStep.CODEC.remove(ModifyItemStep.class);
+        TransactionInteraction.TransactionStep.CODEC.remove(ChangeStatsStep.class);
+        TransactionInteraction.TransactionStep.CODEC.remove(TriggerCooldownStep.class);
+        TransactionInteraction.TransactionStep.CODEC.remove(AlwaysFailStep.class);
+
         Interaction.CODEC.remove(ItemConditionInteraction.class);
         Interaction.CODEC.remove(TargetFirstItemInteraction.class);
         Interaction.CODEC.remove(ModifyItemInteraction.class);
@@ -106,5 +122,6 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.remove(InterruptSelfInteraction.class);
         Interaction.CODEC.remove(RunCommandInteraction.class);
         Interaction.CODEC.remove(RunProxiedCommandInteraction.class);
+        Interaction.CODEC.remove(TransactionInteraction.class);
     }
 }

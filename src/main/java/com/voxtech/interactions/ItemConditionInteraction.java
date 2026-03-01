@@ -9,6 +9,7 @@ import com.hypixel.hytale.codec.lookup.CodecMapCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.protocol.FailOnType;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.protocol.WaitForDataFrom;
@@ -19,6 +20,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHa
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.protocol.ItemMatchType;
 
 import javax.annotation.Nonnull;
@@ -76,20 +78,7 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
             return;
         }
 
-        for (ItemMatcher matcher : this.itemMatchers) {
-            boolean success = matcher.test(ref, context.getCommandBuffer(), context, targetContainer, targetSlot, targetItemStack);
-            if (success && this.itemMatchType == ItemMatchType.Any) {
-                return;
-            }
-
-            if (!success && this.itemMatchType == ItemMatchType.All) {
-                context.getState().state = InteractionState.Failed;
-                return;
-            }
-        }
-
-        if (this.itemMatchType == ItemMatchType.Any) {
-            // Did not find any successful matches
+        if (!InventoryHelper.executeMatchers(this.itemMatchers, this.itemMatchType, ref, context.getCommandBuffer(), context, targetContainer, (short)targetSlot, targetItemStack)) {
             context.getState().state = InteractionState.Failed;
         }
     }
