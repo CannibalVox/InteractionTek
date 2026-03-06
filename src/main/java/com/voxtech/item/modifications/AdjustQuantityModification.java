@@ -7,7 +7,7 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.ItemUtils;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
@@ -50,14 +50,18 @@ public class AdjustQuantityModification extends ModifyItemInteraction.ItemModifi
     private boolean dontSpillOverExtra;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         if (delta > 0) {
             ItemStackSlotTransaction itemTransaction = targetContainer.addItemStackToSlot(targetSlot, targetItem.withQuantity(delta));
             transaction.queueRollback(new ItemSlotRollback(targetContainer, itemTransaction));
             ItemStack remainder = itemTransaction.getRemainder();
 
             if (!ItemStack.isEmpty(remainder) && !dontSpillOverExtra) {
-                ItemContainer combined = inventory.getCombinedHotbarFirst();
+                ItemContainer combined = InventoryComponent.getCombined(buffer, ref, InventoryComponent.HOTBAR_FIRST);
+                if (combined.getCapacity() == 0) {
+                    return false;
+                }
+
                 ItemStackTransaction stackTransaction = combined.addItemStack(remainder);
                 transaction.queueRollback(new ItemStackRollback(combined, stackTransaction));
                 remainder = stackTransaction.getRemainder();

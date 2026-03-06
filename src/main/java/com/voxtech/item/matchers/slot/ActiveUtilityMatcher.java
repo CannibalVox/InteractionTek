@@ -3,11 +3,8 @@ package com.voxtech.item.matchers.slot;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -25,17 +22,11 @@ public class ActiveUtilityMatcher extends SlotMatcher.Slot {
 
     @Override
     public boolean test(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        Entity entity = EntityUtils.getEntity(user, commandBuffer);
-
-        if (!(entity instanceof LivingEntity livingEntity)) {
+        InventoryComponent.Utility utility = commandBuffer.getComponent(user, InventoryComponent.Utility.getComponentType());
+        if (utility == null) {
             return false;
         }
 
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            return false;
-        }
-
-        return (targetContainer == inventory.getUtility() && targetSlot == inventory.getActiveUtilitySlot());
+        return (targetContainer == utility.getInventory() && targetSlot == utility.getActiveSlot());
     }
 }

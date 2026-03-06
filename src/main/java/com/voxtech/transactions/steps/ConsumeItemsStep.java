@@ -7,12 +7,10 @@ import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
@@ -75,21 +73,20 @@ public class ConsumeItemsStep extends TransactionInteraction.TransactionStep {
             return false;
         }
 
-        Entity entity = EntityUtils.getEntity(ref, commandBuffer);
-
-        if (!(entity instanceof LivingEntity livingEntity)) {
-            return false;
-        }
-
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            return false;
-        }
-
         int quantityToConsume = quantity;
         for(int sectionId : sectionIds) {
-            short activeSlot = InventoryHelper.getActiveSlot(inventory, sectionId);
-            ItemContainer container = inventory.getSectionById(sectionId);
+            ComponentType<EntityStore, ? extends InventoryComponent> componentType = InventoryComponent.getComponentTypeById(sectionId);
+            if (componentType == null) {
+                continue;
+            }
+
+            InventoryComponent component = commandBuffer.getComponent(targetedEntity, componentType);
+            if (component == null) {
+                continue;
+            }
+
+            short activeSlot = InventoryHelper.getActiveSlot(component);
+            ItemContainer container = component.getInventory();
             if (container == null) {
                 continue;
             }

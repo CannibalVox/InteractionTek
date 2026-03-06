@@ -3,11 +3,8 @@ package com.voxtech.item.matchers.slot;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -29,17 +26,11 @@ public class TargetArmorSlotMatcher extends SlotMatcher.Slot {
             return false;
         }
 
-        Entity entity = EntityUtils.getEntity(user, commandBuffer);
-
-        if (!(entity instanceof LivingEntity livingEntity)) {
+        InventoryComponent.Armor armor = commandBuffer.getComponent(user, InventoryComponent.Armor.getComponentType());
+        if (armor == null) {
             return false;
         }
 
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            return false;
-        }
-
-        return (targetContainer == inventory.getArmor() && targetSlot == (short)targetItem.getItem().getArmor().getArmorSlot().ordinal());
+        return (targetContainer == armor.getInventory() && targetSlot == (short)targetItem.getItem().getArmor().getArmorSlot().ordinal());
     }
 }

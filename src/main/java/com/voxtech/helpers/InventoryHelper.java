@@ -1,10 +1,10 @@
 package com.voxtech.helpers;
 
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -14,14 +14,12 @@ import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.protocol.ItemMatchType;
 import com.voxtech.transactions.TransactionState;
 
-import static com.hypixel.hytale.server.core.inventory.Inventory.*;
-
 public class InventoryHelper {
-    public static short getActiveSlot(Inventory inventory, int inventorySectionId) {
-        return switch (inventorySectionId) {
-            case HOTBAR_SECTION_ID -> inventory.getActiveHotbarSlot();
-            case UTILITY_SECTION_ID -> inventory.getActiveUtilitySlot();
-            case TOOLS_SECTION_ID -> inventory.getActiveToolsSlot();
+    public static short getActiveSlot(InventoryComponent inventory) {
+        return switch (inventory) {
+            case InventoryComponent.Hotbar hotbar -> hotbar.getActiveSlot();
+            case InventoryComponent.Utility utility -> utility.getActiveSlot();
+            case InventoryComponent.Tool tool -> tool.getActiveSlot();
             default -> -1;
         };
     }
@@ -41,10 +39,10 @@ public class InventoryHelper {
         return matchType == ItemMatchType.All;
     }
 
-    public static boolean executeModifications(ModifyItemInteraction.ItemModification[] modifications, World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer container, short slot, ItemStack itemStack, boolean continueOnFailure) {
+    public static boolean executeModifications(ModifyItemInteraction.ItemModification[] modifications, World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer container, short slot, ItemStack itemStack, boolean continueOnFailure) {
         boolean failed = false;
         for (ModifyItemInteraction.ItemModification modification : modifications) {
-            boolean success = modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, container, slot, itemStack);
+            boolean success = modification.modifyItemStack(world, ref, buffer, transaction, context,  container, slot, itemStack);
 
             ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);
             container = refreshed.getContainer();
@@ -61,5 +59,19 @@ public class InventoryHelper {
         }
 
         return !failed;
+    }
+
+    public static ItemStack getItemInHand(ComponentAccessor<EntityStore> store, Ref<EntityStore> ref) {
+        InventoryComponent.Tool tool = store.getComponent(ref, InventoryComponent.Tool.getComponentType());
+        if (tool != null && tool.isUsingToolsItem()) {
+            return tool.getActiveItem();
+        }
+
+        InventoryComponent.Hotbar hotbar = store.getComponent(ref, InventoryComponent.Hotbar.getComponentType());
+        if (hotbar != null) {
+            return hotbar.getActiveItem();
+        }
+
+        return null;
     }
 }

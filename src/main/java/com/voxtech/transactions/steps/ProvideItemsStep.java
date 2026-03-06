@@ -9,9 +9,9 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.entity.*;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
+import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.util.InteractionTarget;
@@ -97,18 +97,11 @@ public class ProvideItemsStep extends TransactionInteraction.TransactionStep {
             return false;
         }
 
-        Entity entity = EntityUtils.getEntity(ref, commandBuffer);
-
-        if (!(entity instanceof LivingEntity livingEntity)) {
+        CombinedItemContainer container = InventoryComponent.getCombined(commandBuffer, targetEntity, InventoryComponent.HOTBAR_FIRST);
+        if (container.getCapacity() == 0) {
             return false;
         }
 
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            return false;
-        }
-
-        ItemContainer container = inventory.getCombinedHotbarFirst();
         ItemStackTransaction itemTransaction = container.addItemStack(itemStack);
         transaction.queueRollback(new ItemStackRollback(container, itemTransaction));
 

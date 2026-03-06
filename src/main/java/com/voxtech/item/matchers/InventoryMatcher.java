@@ -6,12 +6,10 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -38,18 +36,19 @@ public class InventoryMatcher extends ItemConditionInteraction.ItemMatcher {
 
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-        Entity entity = EntityUtils.getEntity(user, commandBuffer);
-        if (!(entity instanceof LivingEntity livingEntity)) {
-            return false;
-        }
-
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            return false;
-        }
-
         for (Integer sectionId : sectionIds) {
-            if (sectionId != null && inventory.getSectionById(sectionId) == targetContainer) {
+            if (sectionId == null) {
+                continue;
+            }
+
+            ComponentType<EntityStore, ? extends InventoryComponent> componentType = InventoryComponent.getComponentTypeById(sectionId);
+            if (componentType == null) {
+                continue;
+            }
+
+            InventoryComponent component = commandBuffer.getComponent(user, componentType);
+
+            if (component != null && component.getInventory() == targetContainer) {
                 return true;
             }
         }

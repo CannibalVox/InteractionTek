@@ -1,6 +1,5 @@
 package com.voxtech.item.modifications;
 
-import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
@@ -9,7 +8,6 @@ import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -17,7 +15,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
-import com.voxtech.item.matchers.InventoryMatcher;
 import com.voxtech.protocol.ItemMatchType;
 import com.voxtech.transactions.TransactionState;
 
@@ -55,11 +52,11 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
     private ModifyItemInteraction.ItemModification modification;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         if (!InventoryHelper.executeMatchers(itemMatchers, itemMatchType, ref, buffer, context, targetContainer, targetSlot, targetItem)) {
             return true;
         }
 
-        return modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem);
+        return modification.modifyItemStack(world, ref, buffer, transaction, context, targetContainer, targetSlot, targetItem);
     }
 }

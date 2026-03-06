@@ -45,7 +45,7 @@ public class GroupModification extends ModifyItemInteraction.ItemModification {
     private boolean continueOnFailure;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-        return InventoryHelper.executeModifications(itemModifications, world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem, continueOnFailure);
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+        return InventoryHelper.executeModifications(itemModifications, world, ref, buffer, transaction, context, targetContainer, targetSlot, targetItem, continueOnFailure);
     }
 }

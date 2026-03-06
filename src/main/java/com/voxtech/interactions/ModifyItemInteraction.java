@@ -13,16 +13,11 @@ import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.protocol.WaitForDataFrom;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -96,23 +91,9 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
             }
         }
 
-        Entity entity = EntityUtils.getEntity(ref, buffer);
-
-        if (!(entity instanceof LivingEntity livingEntity)) {
-            context.getState().state = InteractionState.Failed;
-            return;
-        }
-
-        Inventory inventory = livingEntity.getInventory();
-
-        if (inventory == null) {
-            context.getState().state = InteractionState.Failed;
-            return;
-        }
-
         TransactionState transaction = new TransactionState();
 
-        if (!InventoryHelper.executeModifications(itemModifications, world, context.getEntity(), buffer, transaction, context, inventory, targetContainer, (short)targetSlot, targetItemStack, continueOnFailure)) {
+        if (!InventoryHelper.executeModifications(itemModifications, world, context.getEntity(), buffer, transaction, context, targetContainer, (short)targetSlot, targetItemStack, continueOnFailure)) {
             context.getState().state = InteractionState.Failed;
 
             if (rollbackOnFailure) {
@@ -146,17 +127,17 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
 
         private boolean failEmptyItem;
 
-        public boolean modifyItemStack(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+        public boolean modifyItemStack(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
             if (targetItem == null && failEmptyItem) {
                 return false;
             } else if (targetItem == null && !canOperateOnEmpty()) {
                 return true;
             }
 
-            return modify0(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem);
+            return modify0(world, ref, buffer, transaction, context, targetContainer, targetSlot, targetItem);
         }
 
-        public abstract boolean modify0(World world, Ref<EntityStore> ref,  CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem);
+        public abstract boolean modify0(World world, Ref<EntityStore> ref,  CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem);
 
         public boolean canOperateOnEmpty() {
             return false;

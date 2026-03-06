@@ -7,7 +7,6 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
@@ -76,7 +75,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
     private String notifyOnBreakMessage;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         Player playerComponent = buffer.getComponent(ref, Player.getComponentType());
 
         if (targetItem.getMaxDurability() < 0.001) {
@@ -108,7 +107,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         boolean transformed = false;
 
         if (execute != null) {
-            if (!execute.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, newItem)) {
+            if (!execute.modifyItemStack(world, ref, buffer, transaction, context, targetContainer, targetSlot, newItem)) {
                 return false;
             }
 

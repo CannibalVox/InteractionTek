@@ -5,10 +5,10 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.MoveTransaction;
@@ -24,8 +24,6 @@ import com.voxtech.transactions.rollback.ItemSlotRollback;
 import com.voxtech.transactions.rollback.ItemTargetRollback;
 
 import javax.annotation.Nonnull;
-
-import static com.hypixel.hytale.server.core.inventory.Inventory.*;
 
 public class RelocateItemModification extends ModifyItemInteraction.ItemModification {
 
@@ -65,13 +63,23 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
     private boolean flexibleQuantity;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-        ItemContainer toContainer = inventory.getSectionById(inventorySectionId);
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+        ComponentType<EntityStore, ? extends InventoryComponent> componentType = InventoryComponent.getComponentTypeById(inventorySectionId);
+        if (componentType == null) {
+            return false;
+        }
+
+        InventoryComponent component = buffer.getComponent(ref, componentType);
+        if (component == null) {
+            return false;
+        }
+
+        ItemContainer toContainer = component.getInventory();
         if (toContainer == null) {
             return false;
         }
 
-        short activeSlot = InventoryHelper.getActiveSlot(inventory, inventorySectionId);
+        short activeSlot = InventoryHelper.getActiveSlot(component);
         if (activeSlot >= 0 && attemptSlot(ref, buffer, transaction, context, targetContainer, toContainer, targetSlot, activeSlot, targetItem)) {
             return true;
         }

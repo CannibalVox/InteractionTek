@@ -6,15 +6,13 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.ItemUtils;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
-import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction;
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
@@ -40,7 +38,7 @@ public class SingulateModification extends ModifyItemInteraction.ItemModificatio
     private ModifyItemInteraction.ItemModification modification;
 
     @Override
-    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, Inventory inventory, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
+    public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
         ItemStack excess = null;
         int quantity = targetItem.getQuantity();
 
@@ -55,12 +53,16 @@ public class SingulateModification extends ModifyItemInteraction.ItemModificatio
             transaction.queueRollback(new ItemSlotRollback(targetContainer, itemTransaction));
         }
 
-        if (!this.modification.modifyItemStack(world, ref, buffer, transaction, context, inventory, targetContainer, targetSlot, targetItem)) {
+        ItemContainer combined = InventoryComponent.getCombined(buffer, ref, InventoryComponent.HOTBAR_FIRST);
+        if (!ItemStack.isEmpty(excess) && combined.getCapacity() == 0) {
+            return false;
+        }
+
+        if (!this.modification.modifyItemStack(world, ref, buffer, transaction, context, targetContainer, targetSlot, targetItem)) {
             return false;
         }
 
         if (!ItemStack.isEmpty(excess)) {
-            ItemContainer combined = inventory.getCombinedHotbarFirst();
             ItemStackTransaction stackTransaction = combined.addItemStack(excess);
             transaction.queueRollback(new ItemStackRollback(combined, stackTransaction));
             excess = stackTransaction.getRemainder();

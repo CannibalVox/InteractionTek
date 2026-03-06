@@ -7,6 +7,7 @@ import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
@@ -15,8 +16,9 @@ import com.hypixel.hytale.server.core.entity.Entity;
 import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.LivingEntity;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -28,7 +30,11 @@ import com.voxtech.protocol.ItemMatchType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static com.hypixel.hytale.server.core.inventory.Inventory.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.hypixel.hytale.server.core.inventory.InventoryComponent.*;
+
 
 public class TargetFirstItemInteraction extends SimpleItemInteraction {
 
@@ -83,30 +89,24 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
 
     private void scanInventory(CommandBuffer<EntityStore> buffer, InteractionContext context) {
         Ref<EntityStore> user = context.getEntity();
-        Entity entity = EntityUtils.getEntity(user, buffer);
 
-        if (!(entity instanceof LivingEntity livingEntity)) {
-            context.getState().state = InteractionState.Failed;
-            return;
-        }
-
-        Inventory inventory = livingEntity.getInventory();
-        if (inventory == null) {
-            context.getState().state = InteractionState.Failed;
-            return;
-        }
-
-        for (Integer inventorySectionId : inventorySections) {
-            if (inventorySectionId == null) {
+        for (Integer sectionId : inventorySections) {
+            if (sectionId == null) {
                 continue;
             }
 
-            ItemContainer container = inventory.getSectionById(inventorySectionId);
-            if (container == null) {
+            ComponentType<EntityStore, ? extends InventoryComponent> inventoryComponentType = InventoryComponent.getComponentTypeById(sectionId);
+            if (inventoryComponentType == null) {
                 continue;
             }
 
-            short activeSlot = InventoryHelper.getActiveSlot(inventory, inventorySectionId);
+            InventoryComponent component = buffer.getComponent(user, inventoryComponentType);
+            if (component == null) {
+                continue;
+            }
+
+            short activeSlot = InventoryHelper.getActiveSlot(component);
+            ItemContainer container = component.getInventory();
             if (activeSlot >= 0 && checkItem(user, buffer, context, container, activeSlot)) {
                 return;
             }
