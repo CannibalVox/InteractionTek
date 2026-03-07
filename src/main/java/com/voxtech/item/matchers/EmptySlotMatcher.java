@@ -7,9 +7,9 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
 
-public class EmptySlotMatcher extends ItemConditionInteraction.ItemMatcher {
+public class EmptySlotMatcher extends ItemMatcher {
     public static final BuilderCodec<EmptySlotMatcher> CODEC = BuilderCodec.builder(EmptySlotMatcher.class, EmptySlotMatcher::new, BASE_CODEC)
             .documentation("This matcher only succeeds if a null item is passed to it.")
             .build();

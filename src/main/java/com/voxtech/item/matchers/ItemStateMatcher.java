@@ -11,11 +11,11 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 
-public class ItemStateMatcher extends ItemConditionInteraction.ItemMatcher {
+public class ItemStateMatcher extends ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<ItemStateMatcher> CODEC = BuilderCodec.builder(

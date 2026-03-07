@@ -13,7 +13,7 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ToolMatcher extends ItemConditionInteraction.ItemMatcher {
+public class ToolMatcher extends ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<ToolMatcher> CODEC = BuilderCodec

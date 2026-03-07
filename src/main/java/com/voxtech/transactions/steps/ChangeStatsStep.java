@@ -17,7 +17,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.util.InteractionTarget;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.TransactionInteraction;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.StatRollback;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 
 import javax.annotation.Nonnull;
 
-public class ChangeStatsStep extends TransactionInteraction.TransactionStep {
+public class ChangeStatsStep extends TransactionStep {
 
     @Nonnull
     public static final BuilderCodec<ChangeStatsStep> CODEC = BuilderCodec

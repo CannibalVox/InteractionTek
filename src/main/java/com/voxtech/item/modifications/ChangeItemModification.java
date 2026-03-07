@@ -14,7 +14,7 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransac
 import com.hypixel.hytale.server.core.inventory.transaction.SlotTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 import joptsimple.internal.Strings;
@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ChangeItemModification extends ModifyItemInteraction.ItemModification {
+public class ChangeItemModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<ChangeItemModification> CODEC = BuilderCodec

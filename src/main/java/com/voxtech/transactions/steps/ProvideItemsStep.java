@@ -16,14 +16,14 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.util.InteractionTarget;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.TransactionInteraction;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemStackRollback;
 import com.voxtech.transactions.rollback.SpawnEntityRollback;
 
 import javax.annotation.Nonnull;
 
-public class ProvideItemsStep extends TransactionInteraction.TransactionStep {
+public class ProvideItemsStep extends TransactionStep {
 
     @Nonnull
     public static final BuilderCodec<ProvideItemsStep> CODEC = BuilderCodec

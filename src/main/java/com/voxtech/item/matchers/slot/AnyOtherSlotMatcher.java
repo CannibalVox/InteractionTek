@@ -9,10 +9,11 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.item.matchers.SlotMatcher;
+import com.voxtech.protocol.Slot;
 
 import javax.annotation.Nonnull;
 
-public class AnyOtherSlotMatcher extends SlotMatcher.Slot {
+public class AnyOtherSlotMatcher extends Slot {
 
     @Nonnull
     public static final BuilderCodec<AnyOtherSlotMatcher> CODEC = BuilderCodec

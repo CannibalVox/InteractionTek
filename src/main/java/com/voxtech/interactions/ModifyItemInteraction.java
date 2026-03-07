@@ -23,6 +23,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
@@ -108,39 +109,5 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
     @Override
     protected void simulateInteractWithItem(@Nonnull World world, @Nonnull InteractionType type, @Nonnull InteractionContext context, @Nullable ItemStack itemInHand, @Nullable ItemContainer targetContainer, int targetSlot, @Nullable ItemStack targetItemStack) {
 
-    }
-
-    public static abstract class ItemModification {
-        @Nonnull
-        public static final CodecMapCodec<ItemModification> CODEC = new CodecMapCodec<>("Type");
-
-        @Nonnull
-        public static final BuilderCodec<ItemModification> BASE_CODEC = BuilderCodec
-            .abstractBuilder(ItemModification.class)
-            .appendInherited(new KeyedCodec<>("FailEmptyItem", Codec.BOOLEAN),
-                (object, failEmptyItem) -> object.failEmptyItem = failEmptyItem,
-                object -> object.failEmptyItem,
-                (object, parent) -> object.failEmptyItem = parent.failEmptyItem)
-                .documentation("If true, this modification will automatically fail if an empty slot is passed to it.  If false, empty slots will not fail, even if it means that the modification can take no action.")
-                .add()
-            .build();
-
-        private boolean failEmptyItem;
-
-        public boolean modifyItemStack(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
-            if (targetItem == null && failEmptyItem) {
-                return false;
-            } else if (targetItem == null && !canOperateOnEmpty()) {
-                return true;
-            }
-
-            return modify0(world, ref, buffer, transaction, context, targetContainer, targetSlot, targetItem);
-        }
-
-        public abstract boolean modify0(World world, Ref<EntityStore> ref,  CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem);
-
-        public boolean canOperateOnEmpty() {
-            return false;
-        }
     }
 }

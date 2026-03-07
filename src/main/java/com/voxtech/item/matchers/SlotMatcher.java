@@ -12,10 +12,12 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
+import com.voxtech.protocol.Slot;
 
 import javax.annotation.Nonnull;
 
-public class SlotMatcher extends ItemConditionInteraction.ItemMatcher {
+public class SlotMatcher extends ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<SlotMatcher> CODEC = BuilderCodec
@@ -46,14 +48,5 @@ public class SlotMatcher extends ItemConditionInteraction.ItemMatcher {
     @Override
     public boolean failEmptyItem() {
         return false;
-    }
-
-    public abstract static class Slot {
-        public static final CodecMapCodec<SlotMatcher.Slot> CODEC = new CodecMapCodec<>("Type");
-        public static final BuilderCodec<Slot> BASE_CODEC = BuilderCodec
-            .abstractBuilder(Slot.class)
-            .build();
-
-        public abstract boolean test(Ref<EntityStore> user,  CommandBuffer<EntityStore> commandBuffer, InteractionContext context,ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
     }
 }

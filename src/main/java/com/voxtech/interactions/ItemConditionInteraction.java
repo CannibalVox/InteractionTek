@@ -1,11 +1,9 @@
 package com.voxtech.interactions;
 
-import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
-import com.hypixel.hytale.codec.lookup.CodecMapCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -21,6 +19,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -80,40 +79,5 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
         if (!InventoryHelper.executeMatchers(this.itemMatchers, this.itemMatchType, ref, context.getCommandBuffer(), context, targetContainer, (short)targetSlot, targetItemStack)) {
             context.getState().state = InteractionState.Failed;
         }
-    }
-
-    public abstract static class ItemMatcher {
-        public static final CodecMapCodec<ItemMatcher> CODEC = new CodecMapCodec<>("Type");
-        public static final BuilderCodec<ItemMatcher> BASE_CODEC = BuilderCodec.abstractBuilder(ItemMatcher.class)
-                .appendInherited(new KeyedCodec<>("Invert", Codec.BOOLEAN),
-                        (object, invert) -> object.invert = invert,
-                        object -> object.invert,
-                        (object, parent) -> object.invert = parent.invert)
-                .documentation("Inverts the results of the matcher")
-                .add()
-                .appendInherited(new KeyedCodec<>("AllowEmpty", Codec.BOOLEAN),
-                        (object, allowEmpty) -> object.allowEmpty = allowEmpty,
-                        object -> object.allowEmpty,
-                        (object, parent) -> object.allowEmpty = parent.allowEmpty)
-                .documentation("If true, the matcher will succeed when the target slot is empty.")
-                .add()
-                .build();
-
-        protected boolean invert;
-        protected boolean allowEmpty;
-
-        public final boolean test(Ref<EntityStore> user,  CommandBuffer<EntityStore> commandBuffer, InteractionContext context,ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {
-            if (targetItem == null && failEmptyItem()) {
-                return allowEmpty;
-            }
-
-            return this.test0(user, commandBuffer, context, targetContainer, targetSlot, targetItem) ^ this.invert;
-        }
-
-        public boolean failEmptyItem() {
-            return true;
-        }
-
-        public abstract boolean test0(Ref<EntityStore> user,  CommandBuffer<EntityStore> commandBuffer, InteractionContext context,ItemContainer targetContainer, int targetSlot, ItemStack targetItem);
     }
 }

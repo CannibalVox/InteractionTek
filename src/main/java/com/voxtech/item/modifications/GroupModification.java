@@ -3,31 +3,28 @@ package com.voxtech.item.modifications;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
-import com.voxtech.helpers.ItemTargetHelper;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 
-public class GroupModification extends ModifyItemInteraction.ItemModification {
+public class GroupModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<GroupModification> CODEC = BuilderCodec
         .builder(GroupModification.class, GroupModification::new, BASE_CODEC)
         .documentation("Execute a list of item modifications. Great to use with other modifications such as Singulate and Conditional.")
-        .appendInherited(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ModifyItemInteraction.ItemModification.CODEC, ModifyItemInteraction.ItemModification[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemModifications", new ArrayCodec<>(ItemModification.CODEC, ItemModification[]::new)),
             (object, itemModifications) -> object.itemModifications = itemModifications,
             object -> object.itemModifications,
             (object, parent) -> object.itemModifications = parent.itemModifications)
@@ -41,7 +38,7 @@ public class GroupModification extends ModifyItemInteraction.ItemModification {
             .add()
         .build();
 
-    private ModifyItemInteraction.ItemModification[] itemModifications;
+    private ItemModification[] itemModifications;
     private boolean continueOnFailure;
 
     @Override

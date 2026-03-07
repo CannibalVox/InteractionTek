@@ -13,14 +13,14 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransac
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.ItemTargetHelper;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.postcommit.BreakItemPostCommit;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 
 import javax.annotation.Nonnull;
 
-public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModification {
+public class AdjustDurabilityModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<AdjustDurabilityModification> CODEC = BuilderCodec
@@ -41,13 +41,13 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
             object -> object.ignoreNoDurability)
             .documentation("If true, attempting to operate on an item that does not have durability (i.e. max durability of 0) will not fail, it will simply have no effect.")
             .add()
-        .appendInherited(new KeyedCodec<>("BreakModification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("BreakModification", ItemModification.CODEC),
             (object, breakModification) -> object.breakModification = breakModification,
     object -> object.breakModification,
             (object, parent) -> object.breakModification = parent.breakModification)
             .documentation("If provided, the modification will be executed in the event that this modification breaks the item. This will have no effect if the item is already broken.")
             .add()
-        .appendInherited(new KeyedCodec<>("UnbreakModification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("UnbreakModification", ItemModification.CODEC),
             (object, unbreakModification) -> object.unbreakModification = unbreakModification,
             object -> object.unbreakModification,
             (object, parent) -> object.unbreakModification = parent.unbreakModification)
@@ -69,8 +69,8 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
     private double delta;
     private boolean ignoreBroken;
     private boolean ignoreNoDurability;
-    private ModifyItemInteraction.ItemModification breakModification;
-    private ModifyItemInteraction.ItemModification unbreakModification;
+    private ItemModification breakModification;
+    private ItemModification unbreakModification;
     private boolean notifyOnBreak;
     private String notifyOnBreakMessage;
 
@@ -97,7 +97,7 @@ public class AdjustDurabilityModification extends ModifyItemInteraction.ItemModi
         boolean isBroken = newItem.isBroken();
 
         // Convert the item if it broke or if it unbroke
-        ModifyItemInteraction.ItemModification execute = null;
+        ItemModification execute = null;
         if (isBroken && !wasBroken && breakModification != null) {
             execute = breakModification;
         } else if (!isBroken && wasBroken && unbreakModification != null) {

@@ -11,13 +11,13 @@ import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.TransactionInteraction;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.CooldownRollback;
 
 import javax.annotation.Nonnull;
 
-public class TriggerCooldownStep extends TransactionInteraction.TransactionStep {
+public class TriggerCooldownStep extends TransactionStep {
 
     @Nonnull
     public static final BuilderCodec<TriggerCooldownStep> CODEC = BuilderCodec

@@ -13,11 +13,11 @@ import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 
-public class InventoryMatcher extends ItemConditionInteraction.ItemMatcher {
+public class InventoryMatcher extends ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<InventoryMatcher> CODEC = BuilderCodec

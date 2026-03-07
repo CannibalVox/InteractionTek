@@ -11,12 +11,12 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
-import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 
-public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
+public class GroupMatcher extends ItemMatcher {
     @Nonnull
     public static final BuilderCodec<GroupMatcher> CODEC = BuilderCodec.builder(
             GroupMatcher.class, GroupMatcher::new, BASE_CODEC
@@ -27,7 +27,7 @@ public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
             interaction -> interaction.itemMatchType)
         .documentation("Whether all, any, or no matchers need to match for this interaction to succeed")
         .add()
-        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
             (object, matchers) -> object.itemMatchers = matchers,
             object -> object.itemMatchers,
             (object, parent) -> object.itemMatchers = parent.itemMatchers)
@@ -36,7 +36,7 @@ public class GroupMatcher extends ItemConditionInteraction.ItemMatcher {
         .build();
 
     private ItemMatchType itemMatchType;
-    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
+    private ItemMatcher[] itemMatchers;
 
     @Override
     public boolean test0(Ref<EntityStore> user, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer targetContainer, int targetSlot, ItemStack targetItem) {

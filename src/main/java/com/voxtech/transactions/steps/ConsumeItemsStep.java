@@ -18,21 +18,21 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHa
 import com.hypixel.hytale.server.core.modules.interaction.interaction.util.InteractionTarget;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
-import com.voxtech.interactions.ItemConditionInteraction;
-import com.voxtech.interactions.TransactionInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 
 import javax.annotation.Nonnull;
 
-public class ConsumeItemsStep extends TransactionInteraction.TransactionStep {
+public class ConsumeItemsStep extends TransactionStep {
 
     @Nonnull
     public static final BuilderCodec<ConsumeItemsStep> CODEC = BuilderCodec
         .builder(ConsumeItemsStep.class, ConsumeItemsStep::new, BASE_CODEC)
         .documentation("Consume a specified quantity of items from the specified entity's inventory. Will fail if the specified entity does not exist or the full quantity cannot be consumed.")
-        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
             (object, matchers) -> object.matchers = matchers,
             object -> object.matchers,
             (object, parent) -> object.matchers = parent.matchers)
@@ -60,7 +60,7 @@ public class ConsumeItemsStep extends TransactionInteraction.TransactionStep {
             .add()
         .build();
 
-    private ItemConditionInteraction.ItemMatcher[] matchers;
+    private ItemMatcher[] matchers;
     private ItemMatchType matchType = ItemMatchType.All;
     private InteractionTarget interactionTarget = InteractionTarget.USER;
     private int quantity = 1;

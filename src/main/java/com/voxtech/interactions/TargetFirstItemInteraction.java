@@ -12,13 +12,9 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.protocol.WaitForDataFrom;
-import com.hypixel.hytale.server.core.entity.Entity;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.LivingEntity;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -26,12 +22,10 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.hypixel.hytale.server.core.inventory.InventoryComponent.*;
 
@@ -42,7 +36,7 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
     public static final BuilderCodec<TargetFirstItemInteraction> CODEC = BuilderCodec
         .builder(TargetFirstItemInteraction.class, TargetFirstItemInteraction::new, SimpleItemInteraction.CODEC)
         .documentation("Scans the User entity's inventory until it finds an item slot that satisfies the provided matchers. If none is found, this interaction will fail.")
-        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
             object -> object.itemMatchers,
             (object, parent) -> object.itemMatchers = parent.itemMatchers)
@@ -62,7 +56,7 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
             .add()
         .build();
 
-    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
+    private ItemMatcher[] itemMatchers;
     private ItemMatchType itemMatchType = ItemMatchType.All;
     private Integer[] inventorySections = {HOTBAR_SECTION_ID, STORAGE_SECTION_ID, UTILITY_SECTION_ID, ARMOR_SECTION_ID, BACKPACK_SECTION_ID};
 

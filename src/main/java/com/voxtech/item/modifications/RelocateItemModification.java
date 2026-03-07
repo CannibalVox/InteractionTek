@@ -17,15 +17,15 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
 import com.voxtech.helpers.ItemTargetHelper;
-import com.voxtech.interactions.ModifyItemInteraction;
-import com.voxtech.item.matchers.SlotMatcher;
+import com.voxtech.protocol.ItemModification;
+import com.voxtech.protocol.Slot;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 import com.voxtech.transactions.rollback.ItemTargetRollback;
 
 import javax.annotation.Nonnull;
 
-public class RelocateItemModification extends ModifyItemInteraction.ItemModification {
+public class RelocateItemModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<RelocateItemModification> CODEC = BuilderCodec
@@ -39,7 +39,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
             .addValidator(Validators.nonNull())
             .addValidator(Validators.lessThan(0))
             .add()
-        .appendInherited(new KeyedCodec<>("Slot", SlotMatcher.Slot.CODEC),
+        .appendInherited(new KeyedCodec<>("Slot", Slot.CODEC),
             (object, slotMatcher) -> object.slotMatcher = slotMatcher,
             object -> object.slotMatcher,
             (object, parent) -> object.slotMatcher = parent.slotMatcher)
@@ -58,7 +58,7 @@ public class RelocateItemModification extends ModifyItemInteraction.ItemModifica
         .build();
 
     private int inventorySectionId;
-    private SlotMatcher.Slot slotMatcher;
+    private Slot slotMatcher;
     private boolean skipRetarget;
     private boolean flexibleQuantity;
 

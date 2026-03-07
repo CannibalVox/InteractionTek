@@ -17,28 +17,27 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.util.Inter
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
-import com.voxtech.interactions.ItemConditionInteraction;
-import com.voxtech.interactions.ModifyItemInteraction;
-import com.voxtech.interactions.TransactionInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
+import com.voxtech.protocol.ItemModification;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
-import javax.naming.directory.ModificationItem;
 
-public class ModifyItemStep extends TransactionInteraction.TransactionStep {
+public class ModifyItemStep extends TransactionStep {
 
     @Nonnull
     public static final BuilderCodec<ModifyItemStep> CODEC = BuilderCodec
         .builder(ModifyItemStep.class, ModifyItemStep::new, BASE_CODEC)
         .documentation("This will scan the specified entity's inventory for a slot that matches the item matchers and then apply the provided modifications to the slot.  This step will fail if there is no matching slot, or if any of the modifications fail to apply.")
-        .appendInherited(new KeyedCodec<>("Modifications", new ArrayCodec<>(ModifyItemInteraction.ItemModification.CODEC, ModifyItemInteraction.ItemModification[]::new)),
+        .appendInherited(new KeyedCodec<>("Modifications", new ArrayCodec<>(ItemModification.CODEC, ItemModification[]::new)),
             (object, modifications) -> object.modifications = modifications,
             object -> object.modifications,
             (object, parent) -> object.modifications = parent.modifications)
             .documentation("The modifications to apply to a slot")
             .add()
-        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
             object -> object.itemMatchers,
             (object, parent) -> object.itemMatchers = parent.itemMatchers)
@@ -62,11 +61,11 @@ public class ModifyItemStep extends TransactionInteraction.TransactionStep {
         .build();
 
 
-    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
+    private ItemMatcher[] itemMatchers;
     private ItemMatchType itemMatchType = ItemMatchType.All;
     private InteractionTarget interactionTarget = InteractionTarget.USER;
     private Integer[] sectionIds = {-1, -2};
-    private ModifyItemInteraction.ItemModification[] modifications;
+    private ItemModification[] modifications;
 
     @Override
     public boolean execute(Ref<EntityStore> ref, CommandBuffer<EntityStore> commandBuffer, TransactionState transaction, InteractionContext context, CooldownHandler cooldownHandler) {

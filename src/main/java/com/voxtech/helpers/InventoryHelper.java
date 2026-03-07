@@ -12,6 +12,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.interactions.ItemConditionInteraction;
 import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 
 public class InventoryHelper {
@@ -24,8 +26,8 @@ public class InventoryHelper {
         };
     }
 
-    public static boolean executeMatchers(ItemConditionInteraction.ItemMatcher[] matchers, ItemMatchType matchType, Ref<EntityStore> ref, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer container, short slot, ItemStack item) {
-        for (ItemConditionInteraction.ItemMatcher matcher : matchers) {
+    public static boolean executeMatchers(ItemMatcher[] matchers, ItemMatchType matchType, Ref<EntityStore> ref, CommandBuffer<EntityStore> commandBuffer, InteractionContext context, ItemContainer container, short slot, ItemStack item) {
+        for (ItemMatcher matcher : matchers) {
             boolean success = matcher.test(ref, commandBuffer, context, container, slot, item);
             if (!success && matchType == ItemMatchType.All) {
                 return false;
@@ -39,9 +41,9 @@ public class InventoryHelper {
         return matchType == ItemMatchType.All;
     }
 
-    public static boolean executeModifications(ModifyItemInteraction.ItemModification[] modifications, World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer container, short slot, ItemStack itemStack, boolean continueOnFailure) {
+    public static boolean executeModifications(ItemModification[] modifications, World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer container, short slot, ItemStack itemStack, boolean continueOnFailure) {
         boolean failed = false;
-        for (ModifyItemInteraction.ItemModification modification : modifications) {
+        for (ItemModification modification : modifications) {
             boolean success = modification.modifyItemStack(world, ref, buffer, transaction, context,  container, slot, itemStack);
 
             ItemTargetHelper.TargetItemData refreshed = ItemTargetHelper.refreshTargetItem(context);

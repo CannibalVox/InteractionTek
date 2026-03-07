@@ -8,12 +8,12 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 
-public class AlwaysFailModification extends ModifyItemInteraction.ItemModification {
+public class AlwaysFailModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<AlwaysFailModification> CODEC = BuilderCodec

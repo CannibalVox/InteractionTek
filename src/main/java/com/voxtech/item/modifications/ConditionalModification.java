@@ -13,20 +13,20 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.voxtech.helpers.InventoryHelper;
-import com.voxtech.interactions.ItemConditionInteraction;
-import com.voxtech.interactions.ModifyItemInteraction;
 import com.voxtech.protocol.ItemMatchType;
+import com.voxtech.protocol.ItemMatcher;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 
 import javax.annotation.Nonnull;
 
-public class ConditionalModification extends ModifyItemInteraction.ItemModification {
+public class ConditionalModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<ConditionalModification> CODEC = BuilderCodec
         .builder(ConditionalModification.class, ConditionalModification::new, BASE_CODEC)
         .documentation("Execute a list of item modifications only if the target item matches a set of item matchers. If the target item does not match, this modification doesn't fail, it simply does not take any action.")
-        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemConditionInteraction.ItemMatcher.CODEC, ItemConditionInteraction.ItemMatcher[]::new)),
+        .appendInherited(new KeyedCodec<>("ItemMatchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
             (object, itemMatchers) -> object.itemMatchers = itemMatchers,
             object -> object.itemMatchers,
             (object, parent) -> object.itemMatchers = parent.itemMatchers)
@@ -38,7 +38,7 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
             object -> object.itemMatchType)
             .documentation("Whether all of the conditions or just any need to match in order for the modifications to execute")
             .add()
-        .appendInherited(new KeyedCodec<>("Modification",ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("Modification",ItemModification.CODEC),
             (object, modification) -> object.modification = modification,
             object -> object.modification,
             (object, parent) -> object.modification = parent.modification)
@@ -48,8 +48,8 @@ public class ConditionalModification extends ModifyItemInteraction.ItemModificat
         .build();
 
     private ItemMatchType itemMatchType = ItemMatchType.All;
-    private ItemConditionInteraction.ItemMatcher[] itemMatchers;
-    private ModifyItemInteraction.ItemModification modification;
+    private ItemMatcher[] itemMatchers;
+    private ItemModification modification;
 
     @Override
     public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {

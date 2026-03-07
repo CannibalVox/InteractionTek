@@ -14,7 +14,7 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransac
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 import com.voxtech.transactions.rollback.ItemStackRollback;
@@ -22,7 +22,7 @@ import com.voxtech.transactions.rollback.SpawnEntityRollback;
 
 import javax.annotation.Nonnull;
 
-public class AdjustQuantityModification extends ModifyItemInteraction.ItemModification {
+public class AdjustQuantityModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<AdjustQuantityModification> CODEC = BuilderCodec

@@ -13,12 +13,12 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ItemConditionInteraction;
+import com.voxtech.protocol.ItemMatcher;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
-public class AssetTagMatcher extends ItemConditionInteraction.ItemMatcher {
+public class AssetTagMatcher extends ItemMatcher {
 
     @Nonnull
     public static final BuilderCodec<AssetTagMatcher> CODEC = BuilderCodec

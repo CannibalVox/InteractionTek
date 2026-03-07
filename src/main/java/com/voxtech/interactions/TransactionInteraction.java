@@ -3,7 +3,6 @@ package com.voxtech.interactions;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
-import com.hypixel.hytale.codec.lookup.CodecMapCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -14,13 +13,13 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.data.Collector;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.data.CollectorTag;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.data.StringTag;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.operation.Label;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.operation.OperationsBuilder;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.voxtech.protocol.TransactionStep;
 import com.voxtech.transactions.TransactionState;
 import joptsimple.internal.Strings;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -62,9 +61,9 @@ public class TransactionInteraction extends Interaction {
         .afterDecode(object -> {
             if (object.steps != null) {
                 for (int i = 0; i < object.steps.length; i++) {
-                    if (!Strings.isNullOrEmpty(object.steps[i].failed)) {
+                    if (!Strings.isNullOrEmpty(object.steps[i].getFailed())) {
                         object.stepsToFailureInteraction.add(object.failureInteractions.size());
-                        object.failureInteractions.add(object.steps[i].failed);
+                        object.failureInteractions.add(object.steps[i].getFailed());
                     } else {
                         object.stepsToFailureInteraction.add(null);
                     }
@@ -189,7 +188,7 @@ public class TransactionInteraction extends Interaction {
         }
 
         for (int i = 0; i < this.steps.length; i++) {
-            if (InteractionManager.walkInteraction(collector, context, StepTag.of(i), steps[i].failed)) {
+            if (InteractionManager.walkInteraction(collector, context, StepTag.of(i), steps[i].getFailed())) {
                 return true;
             }
         }
@@ -201,27 +200,6 @@ public class TransactionInteraction extends Interaction {
     @Override
     protected com.hypixel.hytale.protocol.Interaction generatePacket() {
         return new com.hypixel.hytale.protocol.SimpleInteraction();
-    }
-
-    public static abstract class TransactionStep {
-        private String failed;
-
-        @Nonnull
-        public static final CodecMapCodec<TransactionStep> CODEC = new CodecMapCodec<>("Type");
-
-        @Nonnull
-        public static final BuilderCodec<TransactionStep> BASE_CODEC = BuilderCodec
-            .abstractBuilder(TransactionStep.class)
-            .appendInherited(new KeyedCodec<>("Failed", Interaction.CHILD_ASSET_CODEC),
-                (object, failed) -> object.failed = failed,
-                object -> object.failed,
-                (object, parent) -> object.failed = parent.failed)
-                .documentation("The interaction to run if this transaction step fails.")
-                .addValidator(Interaction.VALIDATOR_CACHE.getValidator().late())
-                .add()
-            .build();
-
-        public abstract boolean execute(Ref<EntityStore> ref, CommandBuffer<EntityStore> commandBuffer, TransactionState transaction, InteractionContext context, CooldownHandler cooldownHandler);
     }
 
     private static class StepTag implements CollectorTag {

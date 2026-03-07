@@ -13,7 +13,7 @@ import com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransac
 import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.voxtech.interactions.ModifyItemInteraction;
+import com.voxtech.protocol.ItemModification;
 import com.voxtech.transactions.TransactionState;
 import com.voxtech.transactions.rollback.ItemSlotRollback;
 import com.voxtech.transactions.rollback.ItemStackRollback;
@@ -21,13 +21,13 @@ import com.voxtech.transactions.rollback.SpawnEntityRollback;
 
 import javax.annotation.Nonnull;
 
-public class SingulateModification extends ModifyItemInteraction.ItemModification {
+public class SingulateModification extends ItemModification {
 
     @Nonnull
     public static final BuilderCodec<SingulateModification> CODEC = BuilderCodec
         .builder(SingulateModification.class, SingulateModification::new, BASE_CODEC)
         .documentation("Runs another item modification, but removes all but one of the target item's quantity first. Afterwards, the excess is added to the entity's inventory.  This may result in the item re-stacking with the target item if they are still compatible after the modification.")
-        .appendInherited(new KeyedCodec<>("Modification", ModifyItemInteraction.ItemModification.CODEC),
+        .appendInherited(new KeyedCodec<>("Modification", ItemModification.CODEC),
             (object, modification) -> object.modification = modification,
             object -> object.modification,
             (object, parent) -> object.modification = parent.modification)
@@ -35,7 +35,7 @@ public class SingulateModification extends ModifyItemInteraction.ItemModificatio
             .add()
         .build();
 
-    private ModifyItemInteraction.ItemModification modification;
+    private ItemModification modification;
 
     @Override
     public boolean modify0(World world, Ref<EntityStore> ref, CommandBuffer<EntityStore> buffer, TransactionState transaction, InteractionContext context, ItemContainer targetContainer, short targetSlot, ItemStack targetItem) {
