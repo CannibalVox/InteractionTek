@@ -63,8 +63,8 @@ public class ModifyItemStep extends TransactionInteraction.TransactionStep {
 
 
     private ItemConditionInteraction.ItemMatcher[] itemMatchers;
-    private ItemMatchType itemMatchType;
-    private InteractionTarget interactionTarget;
+    private ItemMatchType itemMatchType = ItemMatchType.All;
+    private InteractionTarget interactionTarget = InteractionTarget.USER;
     private Integer[] sectionIds = {-1, -2};
     private ModifyItemInteraction.ItemModification[] modifications;
 

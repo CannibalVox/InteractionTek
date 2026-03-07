@@ -27,6 +27,7 @@ public class InteractionTekPlugin extends JavaPlugin {
         Interaction.CODEC.register("TekRunCommand", RunCommandInteraction.class, RunCommandInteraction.CODEC);
         Interaction.CODEC.register("TekRunProxiedCommand", RunProxiedCommandInteraction.class, RunProxiedCommandInteraction.CODEC);
         Interaction.CODEC.register("TekTransaction", TransactionInteraction.class, TransactionInteraction.CODEC);
+        Interaction.CODEC.register("TekCustom", CustomInteraction.class, CustomInteraction.CODEC);
 
         TransactionInteraction.TransactionStep.CODEC.register("ConsumeItems", ConsumeItemsStep.class, ConsumeItemsStep.CODEC);
         TransactionInteraction.TransactionStep.CODEC.register("ProvideItems", ProvideItemsStep.class, ProvideItemsStep.CODEC);
