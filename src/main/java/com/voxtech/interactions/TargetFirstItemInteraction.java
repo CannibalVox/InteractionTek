@@ -43,9 +43,10 @@ public class TargetFirstItemInteraction extends SimpleItemInteraction {
             .documentation("The item matchers to compare against each slot")
             .addValidator(Validators.nonNull())
             .add()
-        .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
+        .appendInherited(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
             (object, itemMatchType) -> object.itemMatchType = itemMatchType,
-            object -> object.itemMatchType)
+            object -> object.itemMatchType,
+            (object, parent) -> object.itemMatchType = parent.itemMatchType)
             .documentation("Whether all or any matchers need to match for a slot to be chosen")
             .add()
         .appendInherited(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),

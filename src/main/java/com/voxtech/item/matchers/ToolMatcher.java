@@ -94,9 +94,10 @@ public class ToolMatcher extends ItemMatcher {
                 .addValidator(Validators.nonNull())
                 .addValidator(Validators.nonEmptyString())
                 .add()
-            .append(new KeyedCodec<>("MinimumQuality", Codec.INTEGER),
+            .appendInherited(new KeyedCodec<>("MinimumQuality", Codec.INTEGER),
                 (object, minimumQuality) -> object.minimumQuality = minimumQuality,
-                object -> object.minimumQuality)
+                object -> object.minimumQuality,
+                (object, parent) -> object.minimumQuality = parent.minimumQuality)
                 .documentation("If provided, a tool spec's quality must be greater than or equal to this value in order to match")
                 .addValidator(Validators.greaterThanOrEqual(0))
                 .add()

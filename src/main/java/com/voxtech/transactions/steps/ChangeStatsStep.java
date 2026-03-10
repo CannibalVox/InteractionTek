@@ -32,47 +32,55 @@ public class ChangeStatsStep extends TransactionStep {
     public static final BuilderCodec<ChangeStatsStep> CODEC = BuilderCodec
         .builder(ChangeStatsStep.class, ChangeStatsStep::new, BASE_CODEC)
         .documentation("Apply delta values to the target entity's stats.  If any of the provided failure conditions are met, fail this transaction step.")
-        .append(new KeyedCodec<>("StatDeltas", new Object2FloatMapCodec<>(Codec.STRING, Object2FloatOpenHashMap::new), true),
+        .appendInherited(new KeyedCodec<>("StatDeltas", new Object2FloatMapCodec<>(Codec.STRING, Object2FloatOpenHashMap::new), true),
             (object, statAssets) -> object.statAssets = statAssets,
-            object -> object.statAssets)
+            object -> object.statAssets,
+            (object, parent) -> object.statAssets = parent.statAssets)
             .documentation("The delta values to apply to a set of provided stats. Deltas can be either positive or negative. The final stat values will be clamped between the entity's minimum and maximum values.")
             .addValidator(Validators.nonNull())
             .addValidator(Validators.nonEmptyMap())
             .addValidator(EntityStatType.VALIDATOR_CACHE.getMapKeyValidator())
             .add()
-        .append(new KeyedCodec<>("ValueType", new EnumCodec<>(ValueType.class)),
+        .appendInherited(new KeyedCodec<>("ValueType", new EnumCodec<>(ValueType.class)),
             (object, valueType) -> object.valueType = valueType,
-            object -> object.valueType)
+            object -> object.valueType,
+            (object, parent) -> object.valueType = parent.valueType)
             .documentation("Whether the delta values are in absolute stat values or percentages")
             .add()
-        .append(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
+        .appendInherited(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
             (object, interactionTarget) -> object.interactionTarget = interactionTarget,
-            object -> object.interactionTarget)
+            object -> object.interactionTarget,
+            (object, parent) -> object.interactionTarget = parent.interactionTarget)
             .documentation("Which entity to modify the stats of.")
             .add()
-        .append(new KeyedCodec<>("FailOnExhaust", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FailOnExhaust", Codec.BOOLEAN),
             (object, failOnExhaust) -> object.failOnExhaust = failOnExhaust,
-            object -> object.failOnExhaust)
+            object -> object.failOnExhaust,
+            (object, parent) -> object.failOnExhaust = parent.failOnExhaust)
             .documentation("Defaults to true. If true, this transaction step will fail if the change would cause a stat to become exhausted (reach minimum)")
             .add()
-        .append(new KeyedCodec<>("FailOnAlreadyExhausted", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FailOnAlreadyExhausted", Codec.BOOLEAN),
             (object, failOnAlreadyExhausted) -> object.failOnAlreadyExhausted = failOnAlreadyExhausted,
-            object -> object.failOnAlreadyExhausted)
+            object -> object.failOnAlreadyExhausted,
+            (object, parent) -> object.failOnAlreadyExhausted = parent.failOnAlreadyExhausted)
             .documentation("If true, this transaction step will fail if it attempts to subtract from stats that were already exhausted (at minimum) before the transaction began")
             .add()
-        .append(new KeyedCodec<>("ExhaustAtZero", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("ExhaustAtZero", Codec.BOOLEAN),
             (object, exhaustAtZero) -> object.exhaustAtZero = exhaustAtZero,
-            object -> object.exhaustAtZero)
+            object -> object.exhaustAtZero,
+            (object, parent) -> object.exhaustAtZero = parent.exhaustAtZero)
             .documentation("Defaults to true. If true, stats will count as exhausted if they are at are below zero, even if they are not at minimum")
             .add()
-        .append(new KeyedCodec<>("FailOnOvercap", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FailOnOvercap", Codec.BOOLEAN),
             (object, failOnOvercap) -> object.failOnOvercap = failOnOvercap,
-            object -> object.failOnOvercap)
+            object -> object.failOnOvercap,
+            (object, parent) -> object.failOnOvercap = parent.failOnOvercap)
             .documentation("If true, this transaction step will fail if the change would cause a stat to become overcapped (surpass maximum). Even if false, stats will be clamped to their maximum value.")
             .add()
-        .append(new KeyedCodec<>("FailOnAlreadyCapped", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FailOnAlreadyCapped", Codec.BOOLEAN),
             (object, failOnAlreadyCapped) -> object.failOnAlreadyCapped = failOnAlreadyCapped,
-            object -> object.failOnAlreadyCapped)
+            object -> object.failOnAlreadyCapped,
+            (object, parent) -> object.failOnAlreadyCapped = parent.failOnAlreadyCapped)
             .documentation("If true, this transaction step will fail if it attempts to add to stats that were already at their maximum.")
             .add()
         .afterDecode(object -> {

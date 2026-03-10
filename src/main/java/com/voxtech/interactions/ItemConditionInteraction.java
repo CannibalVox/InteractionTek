@@ -30,9 +30,10 @@ public class ItemConditionInteraction extends SimpleItemInteraction {
         ItemConditionInteraction.class, ItemConditionInteraction::new, SimpleInteraction.CODEC
     )
     .documentation("This interaction will fail if the target item does not match the ItemMatchers")
-    .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
+    .appendInherited(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
         (interaction, matchType) -> interaction.itemMatchType = matchType,
-        interaction -> interaction.itemMatchType)
+        interaction -> interaction.itemMatchType,
+        (interaction, parent) -> interaction.itemMatchType = parent.itemMatchType)
         .documentation("Whether all or any matchers need to match for this interaction to succeed")
         .add()
     .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),

@@ -33,9 +33,10 @@ public class ConditionalModification extends ItemModification {
             .documentation("A set of conditions that must match the target item for the modifications to execute")
             .addValidator(Validators.nonNull())
             .add()
-        .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
+        .appendInherited(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
             (object, itemMatchType) -> object.itemMatchType = itemMatchType,
-            object -> object.itemMatchType)
+            object -> object.itemMatchType,
+            (object, parent) -> object.itemMatchType = parent.itemMatchType)
             .documentation("Whether all of the conditions or just any need to match in order for the modifications to execute")
             .add()
         .appendInherited(new KeyedCodec<>("Modification",ItemModification.CODEC),

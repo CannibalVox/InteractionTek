@@ -30,14 +30,16 @@ public class RunCommandInteraction extends SimpleInteraction {
     public static final BuilderCodec<RunCommandInteraction> CODEC = BuilderCodec
         .builder(RunCommandInteraction.class, RunCommandInteraction::new, SimpleInteraction.CODEC)
         .documentation("Runs specified command text as the specified entity. Will fail if the entity cannot run commands (mostly, only players can). Otherwise, this interaction will succeed even if the command fails to run.")
-        .append(new KeyedCodec<>("RunAs", InteractionTarget.CODEC),
+        .appendInherited(new KeyedCodec<>("RunAs", InteractionTarget.CODEC),
             (object, runAs) -> object.runAs = runAs,
-            object -> object.runAs)
+            object -> object.runAs,
+            (object, parent) -> object.runAs = parent.runAs)
             .documentation("The entity to run the command as.")
             .add()
-        .append(new KeyedCodec<>("CommandText", Codec.STRING),
+        .appendInherited(new KeyedCodec<>("CommandText", Codec.STRING),
             (object, commandText) -> object.commandText = commandText,
-            object -> object.commandText)
+            object -> object.commandText,
+            (object, parent) -> object.commandText = parent.commandText)
             .documentation("The text of the command to execute.  Do not include the leading slash.")
             .addValidator(Validators.nonEmptyString())
             .addValidator(Validators.nonNull())

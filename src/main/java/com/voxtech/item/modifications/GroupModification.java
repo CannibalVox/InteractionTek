@@ -31,9 +31,10 @@ public class GroupModification extends ItemModification {
             .documentation("The modifications to execute. They will be executed in the order they are provided.")
             .addValidator(Validators.nonNull())
             .add()
-        .append(new KeyedCodec<>("ContinueOnFailure", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("ContinueOnFailure", Codec.BOOLEAN),
             (object, continueOnFailure) -> object.continueOnFailure = continueOnFailure,
-            object -> object.continueOnFailure)
+            object -> object.continueOnFailure,
+            (object, parent) -> object.continueOnFailure = parent.continueOnFailure)
             .documentation("If true, all modifications will be attempted, even if one fails. If false, execution will immediately halt if a modification fails.")
             .add()
         .build();

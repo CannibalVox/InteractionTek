@@ -42,19 +42,22 @@ public class ModifyItemInteraction extends SimpleItemInteraction {
             .documentation("The modifications to execute. They will be executed in the order they are provided")
             .addValidator(Validators.nonNull())
             .add()
-        .append(new KeyedCodec<>("ContinueOnFailure", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("ContinueOnFailure", Codec.BOOLEAN),
             (object, continueOnFailure) -> object.continueOnFailure = continueOnFailure,
-            object -> object.continueOnFailure)
+            object -> object.continueOnFailure,
+            (object, parent) -> object.continueOnFailure = parent.continueOnFailure)
             .documentation("If true, all modifications will be attempted, even if one fails. If false, execution will immediately halt if a modification fails.")
             .add()
-        .append(new KeyedCodec<>("RequiredGameMode", new EnumCodec<>(GameMode.class)),
+        .appendInherited(new KeyedCodec<>("RequiredGameMode", new EnumCodec<>(GameMode.class)),
             (object, requiredGameMode) -> object.requiredGameMode = requiredGameMode,
-            object -> object.requiredGameMode)
+            object -> object.requiredGameMode,
+            (object, parent) -> object.requiredGameMode = parent.requiredGameMode)
             .documentation("If the User entity is a player and they are not in this game mode, this interaction will do nothing but succeed. This setting is ignored for non-players.")
             .add()
-        .append(new KeyedCodec<>("RollbackOnFailure", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("RollbackOnFailure", Codec.BOOLEAN),
             (object, rollbackOnFailure) -> object.rollbackOnFailure = rollbackOnFailure,
-            object -> object.rollbackOnFailure)
+            object -> object.rollbackOnFailure,
+            (object, parent) -> object.rollbackOnFailure = parent.rollbackOnFailure)
             .documentation("If true, all changes made by modifications will be reversed before marking this interaction as failed in the event that a modification fails.")
             .add()
         .build();

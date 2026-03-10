@@ -38,24 +38,28 @@ public class ConsumeItemsStep extends TransactionStep {
             (object, parent) -> object.matchers = parent.matchers)
             .documentation("If provided, only consume items that fit these matchers.")
             .add()
-        .append(new KeyedCodec<>("Quantity", Codec.INTEGER),
+        .appendInherited(new KeyedCodec<>("Quantity", Codec.INTEGER),
             (object, quantity) -> object.quantity = quantity,
-            object -> object.quantity)
+            object -> object.quantity,
+            (object, parent) -> object.quantity = parent.quantity)
             .addValidator(Validators.greaterThanOrEqual(1))
             .add()
-        .append(new KeyedCodec<>("MatchType", new EnumCodec<>(ItemMatchType.class)),
+        .appendInherited(new KeyedCodec<>("MatchType", new EnumCodec<>(ItemMatchType.class)),
             (object, matchType) -> object.matchType = matchType,
-            object -> object.matchType)
+            object -> object.matchType,
+            (object, parent) -> object.matchType = parent.matchType)
             .documentation("Whether a slot needs to match all or any of the matchers in the list to be consumed")
             .add()
-        .append(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
+        .appendInherited(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
             (object, interactionTarget) -> object.interactionTarget = interactionTarget,
-            object -> object.interactionTarget)
+            object -> object.interactionTarget,
+            (object, parent) -> object.interactionTarget = parent.interactionTarget)
             .documentation("Which entity to consume items from")
             .add()
-        .append(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
+        .appendInherited(new KeyedCodec<>("InventorySections", new ArrayCodec<>(Codec.INTEGER, Integer[]::new)),
             (object, sectionIds) -> object.sectionIds = sectionIds,
-            object -> object.sectionIds)
+            object -> object.sectionIds,
+            (object, parent) -> object.sectionIds = parent.sectionIds)
             .documentation("Which inventory sections to scan and in which order. By default, scans the hotbar and then the main storage.")
             .add()
         .build();

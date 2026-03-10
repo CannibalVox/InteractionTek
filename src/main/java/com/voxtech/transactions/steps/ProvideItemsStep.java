@@ -29,38 +29,44 @@ public class ProvideItemsStep extends TransactionStep {
     public static final BuilderCodec<ProvideItemsStep> CODEC = BuilderCodec
         .builder(ProvideItemsStep.class, ProvideItemsStep::new, BASE_CODEC)
         .documentation("Add items with the provided qualities to the inventory of the specified entity.  Drop excess items on the ground.")
-        .append(new KeyedCodec<>("ItemId", Codec.STRING),
+        .appendInherited(new KeyedCodec<>("ItemId", Codec.STRING),
             (object, itemId) -> object.itemId = itemId,
-            object -> object.itemId)
+            object -> object.itemId,
+            (object, parent) -> object.itemId = parent.itemId)
             .documentation("The itemId to fill the entity's inventory with.")
             .addValidator(Validators.nonNull())
             .addValidator(Validators.nonEmptyString())
             .addValidator(Item.VALIDATOR_CACHE.getValidator().late())
             .add()
-        .append(new KeyedCodec<>("Quantity", Codec.INTEGER),
+        .appendInherited(new KeyedCodec<>("Quantity", Codec.INTEGER),
             (object, quantity) -> object.quantity = quantity,
-            object -> object.quantity)
+            object -> object.quantity,
+            (object, parent) -> object.quantity = parent.quantity)
             .documentation("The quantity to add to the entity's inventory.")
             .addValidator(Validators.greaterThanOrEqual(1))
             .add()
-        .append(new KeyedCodec<>("State", Codec.STRING),
+        .appendInherited(new KeyedCodec<>("State", Codec.STRING),
             (object, state) -> object.state = state,
-            object -> object.state)
+            object -> object.state,
+            (object, parent) -> object.state = parent.state)
             .documentation("If provided, the new items will of the provided item state.")
             .add()
-        .append(new KeyedCodec<>("Durability", Codec.DOUBLE),
+        .appendInherited(new KeyedCodec<>("Durability", Codec.DOUBLE),
             (object, durability) -> object.durability = durability,
-            object -> object.durability)
+            object -> object.durability,
+            (object, parent) -> object.durability = parent.durability)
             .documentation("If provided, the new items will have the provided durability")
             .add()
-        .append(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
+        .appendInherited(new KeyedCodec<>("InteractionTarget", new EnumCodec<>(InteractionTarget.class)),
             (object, interactionTarget) -> object.interactionTarget = interactionTarget,
-            object -> object.interactionTarget)
+            object -> object.interactionTarget,
+                (object, parent) -> object.interactionTarget = parent.interactionTarget)
             .documentation("The interaction entity to add items to")
             .add()
-        .append(new KeyedCodec<>("FailOnSpillover", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FailOnSpillover", Codec.BOOLEAN),
             (object, failOnSpillover) -> object.failOnSpillover = failOnSpillover,
-            object -> object.failOnSpillover)
+            object -> object.failOnSpillover,
+            (object, parent) -> object.failOnSpillover = parent.failOnSpillover)
             .documentation("If true, this transaction step will fail if the items cannot fit within the entity's inventory without dropping on the ground.")
             .add()
         .build();

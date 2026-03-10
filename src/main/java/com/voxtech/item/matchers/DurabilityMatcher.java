@@ -19,20 +19,23 @@ public class DurabilityMatcher extends ItemMatcher {
     @Nonnull
     public static final BuilderCodec<DurabilityMatcher> CODEC = BuilderCodec.builder(DurabilityMatcher.class, DurabilityMatcher::new, BASE_CODEC)
         .documentation("Used to match items that have a durability above or below a given threshold. Empty slots will fail.")
-        .append(new KeyedCodec<>("LessThan", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("LessThan", Codec.BOOLEAN),
             (object, lessThan) -> object.lessThan = lessThan,
-            object -> object.lessThan)
+            object -> object.lessThan,
+            (object, parent) -> object.lessThan = parent.lessThan)
             .documentation("When true, the matcher will pass if the target item's durability is less than or equal to the value. When false, if greater than or equal to the value.")
             .add()
-        .append(new KeyedCodec<>("Value", Codec.DOUBLE),
+        .appendInherited(new KeyedCodec<>("Value", Codec.DOUBLE),
             (object, value) -> object.value = value,
-            object -> object.value)
+            object -> object.value,
+            (object, parent) -> object.value = parent.value)
             .documentation("The durability amount to compare the target item's durability against.")
             .addValidator(Validators.greaterThanOrEqual(0.0))
             .add()
-        .append(new KeyedCodec<>("IgnoreNoDurability", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("IgnoreNoDurability", Codec.BOOLEAN),
             (object, ignore) -> object.ignoreNoDurability = ignore,
-            object -> object.ignoreNoDurability)
+            object -> object.ignoreNoDurability,
+            (object, parent) -> object.ignoreNoDurability = parent.ignoreNoDurability)
             .documentation("When true, the matcher will always pass if the target item's max durability is 0.")
             .add()
         .build();

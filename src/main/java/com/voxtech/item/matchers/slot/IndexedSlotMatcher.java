@@ -21,9 +21,10 @@ public class IndexedSlotMatcher extends Slot {
     public static final BuilderCodec<IndexedSlotMatcher> CODEC = BuilderCodec
         .builder(IndexedSlotMatcher.class, IndexedSlotMatcher::new, BASE_CODEC)
         .documentation("This matcher will pass if the target item occupies a slot in its inventory section with the provided index")
-        .append(new KeyedCodec<>("SlotIndex", Codec.INTEGER),
+        .appendInherited(new KeyedCodec<>("SlotIndex", Codec.INTEGER),
             (object, slotIndex) -> object.slotIndex = slotIndex,
-            object -> object.slotIndex)
+            object -> object.slotIndex,
+            (object, parent) -> object.slotIndex = parent.slotIndex)
             .documentation("The index to compare against the target item's slot index")
             .addValidator(Validators.greaterThanOrEqual(0))
             .add()

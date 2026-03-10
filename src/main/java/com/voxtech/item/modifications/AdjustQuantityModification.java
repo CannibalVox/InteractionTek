@@ -28,19 +28,22 @@ public class AdjustQuantityModification extends ItemModification {
     public static final BuilderCodec<AdjustQuantityModification> CODEC = BuilderCodec
         .builder(AdjustQuantityModification.class, AdjustQuantityModification::new, BASE_CODEC)
         .documentation("This modification will increase or reduce the quantity of the target item. When reducing the quantity of the target item, this modification will fail if there are not enough in the target slot.")
-        .append(new KeyedCodec<>("Delta", Codec.INTEGER),
+        .appendInherited(new KeyedCodec<>("Delta", Codec.INTEGER),
             (object, delta) -> object.delta = delta,
-            object -> object.delta)
+            object -> object.delta,
+            (object, parent) -> object.delta = parent.delta)
             .documentation("The amount to increase or decrease quantity by.")
             .add()
-        .append(new KeyedCodec<>("DontSpillOverExtra", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("DontSpillOverExtra", Codec.BOOLEAN),
             (object, dontSpillOverExtra) -> object.dontSpillOverExtra = dontSpillOverExtra,
-            object -> object.dontSpillOverExtra)
+            object -> object.dontSpillOverExtra,
+            (object, parent) -> object.dontSpillOverExtra = parent.dontSpillOverExtra)
             .documentation("If true when increasing quantity, do not place the excess that cannot fit in the slot elsewhere in the entity's inventory")
             .add()
-        .append(new KeyedCodec<>("DontDropExtra", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("DontDropExtra", Codec.BOOLEAN),
             (object, dontDropExtra) -> object.dontDropExtra = dontDropExtra,
-            object -> object.dontDropExtra)
+            object -> object.dontDropExtra,
+            (object, parent) -> object.dontDropExtra = parent.dontDropExtra)
             .documentation("If true when increasing quantity, do not drop any excess that can't fit into the slot and/or inventory on the ground. Instead, mark this modification as failed.")
             .add()
         .build();

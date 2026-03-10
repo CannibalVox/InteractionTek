@@ -36,14 +36,16 @@ public class ChangeItemModification extends ItemModification {
             (object, parent) -> object.transformations = parent.transformations)
             .documentation("List of transformations to attempt.  The first matching SourceItem/SourceItemState to match the target item will cause the item to be converted to the provided TargetItem/TargetItemState")
             .add()
-        .append(new KeyedCodec<>("DropDurability", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("DropDurability", Codec.BOOLEAN),
             (object, keepDurability) -> object.keepDurability = keepDurability,
-            object -> object.keepDurability)
+            object -> object.keepDurability,
+            (object, parent) -> object.keepDurability = parent.keepDurability)
             .documentation("If true, the modification will attempt to retain the item's durability during transitions between different item id's. Differing maximum durabilities may cause unusual results.")
             .add()
-        .append(new KeyedCodec<>("DropDurabilitySameItem", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("DropDurabilitySameItem", Codec.BOOLEAN),
             (object, keepDurabilitySameItem) -> object.keepDurabilitySameItem = keepDurabilitySameItem,
-            object -> object.keepDurabilitySameItem)
+            object -> object.keepDurabilitySameItem,
+            (object, parent) -> object.keepDurabilitySameItem = parent.keepDurabilitySameItem)
             .documentation("Defaults to true. When true, the modification will retain the item's durability during transitions between different states of the same item.")
             .add()
         .build();
@@ -145,26 +147,30 @@ public class ChangeItemModification extends ItemModification {
         public static final BuilderCodec<ItemTransition> CODEC = BuilderCodec
             .builder(ItemTransition.class, ItemTransition::new)
             .documentation("A conversion from one item type to another, with item states optionally included")
-            .append(new KeyedCodec<>("SourceItem", Codec.STRING),
+            .appendInherited(new KeyedCodec<>("SourceItem", Codec.STRING),
                 (object, itemId) -> object.sourceItem = itemId,
-                object -> object.sourceItem)
+                object -> object.sourceItem,
+                (object, parent) -> object.sourceItem = parent.sourceItem)
                 .documentation("The itemId to match with the original item. If left empty, all items will match.")
                 .addValidator(Item.VALIDATOR_CACHE.getValidator().late())
                 .add()
-            .append(new KeyedCodec<>("SourceItemState", Codec.STRING),
+            .appendInherited(new KeyedCodec<>("SourceItemState", Codec.STRING),
                 (object, state) -> object.sourceItemState = state,
-                object -> object.sourceItemState)
+                object -> object.sourceItemState,
+                (object, parent) -> object.sourceItemState = parent.sourceItemState)
                 .documentation("The item state to match. If it is null, then only the base item with no state will be matched. Otherwise, the * character can be used as a wildcard to match many item states. If the text is only a wildcard, the base item will also be matched.")
                 .add()
-            .append(new KeyedCodec<>("TargetItem", Codec.STRING),
+            .appendInherited(new KeyedCodec<>("TargetItem", Codec.STRING),
                 (object, itemId) -> object.targetItem = itemId,
-                object -> object.targetItem)
+                object -> object.targetItem,
+                (object, parent) -> object.targetItem = parent.targetItem)
                 .documentation("If included, the itemId to change the target item to. If left null, the target item will be removed.")
                 .addValidator(Item.VALIDATOR_CACHE.getValidator().late())
                 .add()
-            .append(new KeyedCodec<>("TargetItemState", Codec.STRING),
+            .appendInherited(new KeyedCodec<>("TargetItemState", Codec.STRING),
                 (object, state) -> object.targetItemState = state,
-                object -> object.targetItemState)
+                object -> object.targetItemState,
+                (object, parent) -> object.targetItemState = parent.targetItemState)
                 .documentation("If included, the itemId will be transitioned to this item state under the TargetItem")
                 .add()
             .afterDecode(object -> {

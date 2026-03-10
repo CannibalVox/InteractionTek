@@ -15,9 +15,10 @@ import com.voxtech.protocol.ItemMatcher;
 public class QuantityMatcher extends ItemMatcher {
     public static final BuilderCodec<QuantityMatcher> CODEC = BuilderCodec.builder(QuantityMatcher.class, QuantityMatcher::new, BASE_CODEC)
         .documentation("Used to match item stacks that have a quantity above or below a given threshold. Always fails empty slots.")
-        .append(new KeyedCodec<>("LessThan", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("LessThan", Codec.BOOLEAN),
             (object, lessThan) -> object.lessThan = lessThan,
-            object -> object.lessThan)
+            object -> object.lessThan,
+            (object, parent) -> object.lessThan = parent.lessThan)
             .documentation("When true, the matcher will pass if the target item stack's quantity is less than or equal to the value. When false, if greater than or equal to the value.")
             .add()
         .appendInherited(new KeyedCodec<>("Value", Codec.INTEGER),

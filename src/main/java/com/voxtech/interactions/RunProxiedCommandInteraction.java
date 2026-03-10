@@ -38,21 +38,24 @@ public class RunProxiedCommandInteraction extends SimpleInteraction {
     public static final BuilderCodec<RunProxiedCommandInteraction> CODEC = BuilderCodec
         .builder(RunProxiedCommandInteraction.class, RunProxiedCommandInteraction::new, SimpleInteraction.CODEC)
         .documentation("Runs specified command text as the specified entity, proxied through a . Will fail if the entity cannot run commands (mostly, only players can). Otherwise, this interaction will succeed even if the command fails to run.")
-        .append(new KeyedCodec<>("RunFor", InteractionTarget.CODEC),
+        .appendInherited(new KeyedCodec<>("RunFor", InteractionTarget.CODEC),
             (object, runAs) -> object.runFor = runAs,
-            object -> object.runFor)
+            object -> object.runFor,
+            (object, parent) -> object.runFor = parent.runFor)
             .documentation("The entity to run the command as.")
             .add()
-        .append(new KeyedCodec<>("CommandText", Codec.STRING),
+        .appendInherited(new KeyedCodec<>("CommandText", Codec.STRING),
             (object, commandText) -> object.commandText = commandText,
-            object -> object.commandText)
+            object -> object.commandText,
+            (object, parent) -> object.commandText = parent.commandText)
             .documentation("The text of the command to execute.  Do not include the leading slash. The commands will not consider themselves to have run as a player, so the --player argument will sometimes be necessary.  See the readme for @-variables permitted in this command text.")
             .addValidator(Validators.nonEmptyString())
             .addValidator(Validators.nonNull())
             .add()
-        .append(new KeyedCodec<>("WithPermissions", new SetCodec<>(Codec.STRING, HashSet<String>::new, true)),
+        .appendInherited(new KeyedCodec<>("WithPermissions", new SetCodec<>(Codec.STRING, HashSet<String>::new, true)),
             (object, withPermissions) -> object.withPermissions = withPermissions,
-            object -> object.withPermissions)
+            object -> object.withPermissions,
+            (object, parent) -> object.withPermissions = parent.withPermissions)
             .documentation("A set of permissions to add to the user for the scope of this command. When this field is used, the command runner will no longer be considered a player, which may prevent some commands from running.")
             .add()
         .build();

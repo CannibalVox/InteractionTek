@@ -45,14 +45,16 @@ public class RelocateItemModification extends ItemModification {
             (object, parent) -> object.slotMatcher = parent.slotMatcher)
             .documentation("If provided, a slot must pass this matcher for the target item to be placed there.")
             .add()
-        .append(new KeyedCodec<>("SkipRetarget", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("SkipRetarget", Codec.BOOLEAN),
             (object, skipRetarget) -> object.skipRetarget = skipRetarget,
-    object -> object.skipRetarget)
+    object -> object.skipRetarget,
+            (object, parent) -> object.skipRetarget = parent.skipRetarget)
             .documentation("If true, the target item slot will not be changed even if the relocation is successful.")
             .add()
-        .append(new KeyedCodec<>("FlexibleQuantity", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("FlexibleQuantity", Codec.BOOLEAN),
             (object, flexibleQuantity) -> object.flexibleQuantity = flexibleQuantity,
-            object -> object.flexibleQuantity)
+            object -> object.flexibleQuantity,
+            (object, parent) -> object.flexibleQuantity = parent.flexibleQuantity)
             .documentation("If true, the first slot that will accept any of the current target item's quantity will be used, even if all of the quantity cannot fit. The remaining quantity will remain in place.")
             .add()
         .build();

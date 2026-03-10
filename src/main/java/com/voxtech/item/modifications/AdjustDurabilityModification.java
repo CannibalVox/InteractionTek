@@ -26,19 +26,22 @@ public class AdjustDurabilityModification extends ItemModification {
     public static final BuilderCodec<AdjustDurabilityModification> CODEC = BuilderCodec
         .builder(AdjustDurabilityModification.class, AdjustDurabilityModification::new, BASE_CODEC)
         .documentation("This modification will increase or reduce an item's current durability. It will fail if the item does not have durability, or when attempting to reduce the durability of an item that is already broken.")
-        .append(new KeyedCodec<>("Delta", Codec.DOUBLE),
+        .appendInherited(new KeyedCodec<>("Delta", Codec.DOUBLE),
             (object, delta) -> object.delta = delta,
-            object -> object.delta)
+            object -> object.delta,
+            (object, parent) -> object.delta = parent.delta)
             .documentation("The amount to increase or reduce the item's current durability by")
             .add()
-        .append(new KeyedCodec<>("IgnoreBroken", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("IgnoreBroken", Codec.BOOLEAN),
             (object, ignoreBroken) -> object.ignoreBroken = ignoreBroken,
-            object -> object.ignoreBroken)
+            object -> object.ignoreBroken,
+            (object, parent) -> object.ignoreBroken = parent.ignoreBroken)
             .documentation("If true, attempting to reduce the durability of an object that is already broken will not fail, it will simply have no effect.")
             .add()
-        .append(new KeyedCodec<>("IgnoreNoDurability", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("IgnoreNoDurability", Codec.BOOLEAN),
             (object, ignoreNoDurability) -> object.ignoreNoDurability = ignoreNoDurability,
-            object -> object.ignoreNoDurability)
+            object -> object.ignoreNoDurability,
+            (object, parent) -> object.ignoreNoDurability = parent.ignoreNoDurability)
             .documentation("If true, attempting to operate on an item that does not have durability (i.e. max durability of 0) will not fail, it will simply have no effect.")
             .add()
         .appendInherited(new KeyedCodec<>("BreakModification", ItemModification.CODEC),
@@ -53,14 +56,16 @@ public class AdjustDurabilityModification extends ItemModification {
             (object, parent) -> object.unbreakModification = parent.unbreakModification)
             .documentation("If provided, the modification will be executed in the event that this modification caused the item to go from broken to not broken")
             .add()
-        .append(new KeyedCodec<>("NotifyOnBreak", Codec.BOOLEAN),
+        .appendInherited(new KeyedCodec<>("NotifyOnBreak", Codec.BOOLEAN),
             (object, notifyOnBreak) -> object.notifyOnBreak = notifyOnBreak,
-            object -> object.notifyOnBreak)
+            object -> object.notifyOnBreak,
+            (object, parent) -> object.notifyOnBreak = parent.notifyOnBreak)
             .documentation("If true, and the User entity is a player, the player will receive a chat message indicating that their item broke even when it changes types through BrokenItem. Normally, a message will only display if the item broke but did not change types.")
             .add()
-        .append(new KeyedCodec<>("NotifyOnBreakMessage", Codec.STRING),
+        .appendInherited(new KeyedCodec<>("NotifyOnBreakMessage", Codec.STRING),
             (object, notifyOnBreakMessage) -> object.notifyOnBreakMessage = notifyOnBreakMessage,
-            object -> object.notifyOnBreakMessage)
+            object -> object.notifyOnBreakMessage,
+            (object, parent) -> object.notifyOnBreakMessage = parent.notifyOnBreakMessage)
             .documentation("Custom translation key for the break notification message. Supports {itemName} parameter. Defaults to 'server.general.repair.itemBroken' if not specified")
             .add()
         .build();

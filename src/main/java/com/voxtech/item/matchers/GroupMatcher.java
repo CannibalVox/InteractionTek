@@ -22,9 +22,10 @@ public class GroupMatcher extends ItemMatcher {
             GroupMatcher.class, GroupMatcher::new, BASE_CODEC
         )
         .documentation("This matcher will succeed based on its sub-matchers, allowing complex logic to be built")
-        .append(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
+        .appendInherited(new KeyedCodec<>("ItemMatchType", new EnumCodec<>(ItemMatchType.class)),
             (interaction, matchType) -> interaction.itemMatchType = matchType,
-            interaction -> interaction.itemMatchType)
+            interaction -> interaction.itemMatchType,
+            (object, parent) -> object.itemMatchType = parent.itemMatchType)
         .documentation("Whether all, any, or no matchers need to match for this interaction to succeed")
         .add()
         .appendInherited(new KeyedCodec<>("Matchers", new ArrayCodec<>(ItemMatcher.CODEC, ItemMatcher[]::new)),
